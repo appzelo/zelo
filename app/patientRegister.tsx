@@ -42,7 +42,7 @@ export default function patientRegister() {
                         ></AppInput>
                         <AppInput 
                             showLabel
-                            label="Data de Nascimento" 
+                            label="Nascimento" 
                             placeholder="DD/MM/AAAA" 
                             required
                             containerStyle={{flex: 1}}
@@ -52,7 +52,7 @@ export default function patientRegister() {
                     <View style={styles.row}>
                         <AppInput 
                             showLabel
-                            label="E-mail" 
+                            label="E-mail de Contato" 
                             placeholder="email@exemplo.com" 
                             required
                             containerStyle={{flex: 1}}
