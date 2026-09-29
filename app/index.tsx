@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Pressable, Image } from "react-native"
+import { View, Text, StyleSheet, Pressable, Image, TouchableWithoutFeedback, Keyboard } from "react-native"
 import { router } from "expo-router"
 import { colors } from "../constants/colors"
 import AppButton from "../components/AppButton"
@@ -6,46 +6,48 @@ import AppInput from "../components/AppInput"
 
 export default function Index() {
     return (
-        <View style={styles.container}>
-            <View style={styles.content}>
-                <View style={styles.header}>
-                    {/* <Text style={styles.title}>ZELO</Text> */}
-                    <Image style={styles.zeloImage} source={require("../assets/zelo.png")}></Image>
-                    <Text style={styles.subtitle}>Conforto e cuidado para você.</Text>
-                </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.container}>
+                <View style={styles.content}>
+                    <View style={styles.header}>
+                        {/* <Text style={styles.title}>ZELO</Text> */}
+                        <Image style={styles.zeloImage} source={require("../assets/zelo.png")}></Image>
+                        <Text style={styles.subtitle}>Conforto e cuidado para você.</Text>
+                    </View>
 
-                <View style={styles.form}>
-                    <AppInput 
-                        showLabel
-                        label="CPF ou E-mail"
-                        placeholder="Ex.: 123.456.789-00"     
-                    ></AppInput>
-                    <View style={styles.passwordGroup}>
+                    <View style={styles.form}>
                         <AppInput 
                             showLabel
-                            label="Senha" 
-                            placeholder="Digite sua senha" 
-                            secureTextEntry={true}
+                            label="CPF ou E-mail"
+                            placeholder="Ex.: 123.456.789-00"     
                         ></AppInput>
+                        <View style={styles.passwordGroup}>
+                            <AppInput 
+                                showLabel
+                                label="Senha" 
+                                placeholder="Digite sua senha" 
+                                secureTextEntry={true}
+                            ></AppInput>
 
-                        <Pressable style={styles.forgotPassword}>
-                            <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
-                        </Pressable>
+                            <Pressable style={styles.forgotPassword}>
+                                <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
+                            </Pressable>
+                        </View>
+
                     </View>
 
                 </View>
 
-            </View>
-
-            <View style={styles.footer}>
-                <View style={styles.buttonGroup}>
-                    <AppButton text="Entrar"></AppButton>
-                    <View style={styles.divider}></View>
-                    <Text style={styles.signupLabel}>Novo por aqui?</Text>
-                    <AppButton text="Criar conta" onPress={() => router.push("/register")} variant="secondary"></AppButton>
+                <View style={styles.footer}>
+                    <View style={styles.buttonGroup}>
+                        <AppButton text="Entrar"></AppButton>
+                        <View style={styles.divider}></View>
+                        <Text style={styles.signupLabel}>Novo por aqui?</Text>
+                        <AppButton text="Criar conta" onPress={() => router.push("/register")} variant="secondary"></AppButton>
+                    </View>
                 </View>
             </View>
-        </View>
+        </TouchableWithoutFeedback>
     )
 }
 
