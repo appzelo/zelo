@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet, Pressable, Image, TouchableWithoutFeedback, Keyboard } from "react-native"
 import { router } from "expo-router"
-import { colors } from "../constants/colors"
-import AppButton from "../components/AppButton"
-import AppInput from "../components/AppInput"
+import { colors } from "../../constants/colors"
+import AppButton from "../../src/components/AppButton"
+import AppInput from "../../src/components/AppInput"
 
 export default function Index() {
     return (
@@ -11,7 +11,7 @@ export default function Index() {
                 <View style={styles.content}>
                     <View style={styles.header}>
                         {/* <Text style={styles.title}>ZELO</Text> */}
-                        <Image style={styles.zeloImage} source={require("../assets/zelo.png")}></Image>
+                        <Image style={styles.zeloImage} source={require("../../assets/zelo.png")}></Image>
                         <Text style={styles.subtitle}>Conforto e cuidado para você.</Text>
                     </View>
 

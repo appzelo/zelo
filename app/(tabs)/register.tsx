@@ -1,11 +1,11 @@
 import { useState } from "react"
 import { View, StyleSheet } from "react-native"
 import { router } from "expo-router"
-import BackHeader from "../components/BackHeader"
-import SectionText from "../components/SectionText"
-import ProfileCard from "../components/ProfileCard"
-import AppButton from "../components/AppButton"
-import { colors } from "../constants/colors"
+import BackHeader from "../../src/components/BackHeader"
+import SectionText from "../../src/components/SectionText"
+import ProfileCard from "../../src/components/ProfileCard"
+import AppButton from "../../src/components/AppButton"
+import { colors } from "../../constants/colors"
 
 export default function Register() {
     const [selectedCard, setSelectedCard] = useState("patient")

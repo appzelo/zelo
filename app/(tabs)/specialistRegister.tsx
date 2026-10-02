@@ -1,9 +1,9 @@
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from "react-native"
-import BackHeader from "../components/BackHeader"
-import SectionText from "../components/SectionText"
-import { colors } from "../constants/colors"
-import AppInput from "../components/AppInput"
-import AppButton from "../components/AppButton"
+import BackHeader from "../../src/components/BackHeader"
+import SectionText from "../../src/components/SectionText"
+import { colors } from "../../constants/colors"
+import AppInput from "../../src/components/AppInput"
+import AppButton from "../../src/components/AppButton"
 
 export default function specialistRegister() {
     return(

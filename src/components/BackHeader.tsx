@@ -1,6 +1,6 @@
 import { View, Pressable, Text, StyleSheet } from "react-native"
 import { router } from "expo-router"
-import { colors } from "../constants/colors"
+import { colors } from "../../constants/colors"
 
 type BackHeaderProps = {
     text?: string,

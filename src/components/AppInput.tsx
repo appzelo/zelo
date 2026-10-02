@@ -1,5 +1,5 @@
 import { View, Text, TextInput, StyleSheet, StyleProp, ViewStyle } from "react-native"
-import { colors } from "../constants/colors"
+import { colors } from "../../constants/colors"
 
 type AppInputProps = {
     showLabel?: boolean,
