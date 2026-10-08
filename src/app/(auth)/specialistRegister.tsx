@@ -4,10 +4,14 @@ import SectionText from "../../components/SectionText"
 import { colors } from "../../../constants/colors"
 import AppInput from "../../components/AppInput"
 import AppButton from "../../components/AppButton"
+import AppSlider from "../../components/AppSlider"
+import { useState } from "react"
 
 export default function specialistRegister() {
-    return(
+    const minValue = 2
+    const [currentValue, setCurrentValue] = useState(minValue)
 
+    return(
         <View style={styles.container}>
             <View style={styles.header}>
                 <BackHeader text="Cadastro de Especialista"></BackHeader>
@@ -60,6 +64,14 @@ export default function specialistRegister() {
                         required
                         containerStyle={{flex: 3}}
                     ></AppInput>
+                    <AppSlider 
+                        title="Distância Máxima de Atendimento" 
+                        minValue={minValue} 
+                        maxValue={50} 
+                        metricUnit="km"
+                        currentValue={currentValue}
+                        onValueChange={setCurrentValue}
+                    ></AppSlider>
                     <AppButton text="Salvar e Continuar"></AppButton>
                 </ScrollView>
             </KeyboardAvoidingView>
