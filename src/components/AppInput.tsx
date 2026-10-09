@@ -1,7 +1,9 @@
 import { View, Text, TextInput, StyleSheet, StyleProp, ViewStyle } from "react-native"
 import { colors } from "../../constants/colors"
+import { Controller, useFormContext } from "react-hook-form"
 
 type AppInputProps = {
+    name: string,
     showLabel?: boolean,
     label?: string,
     placeholder?: string,
@@ -11,6 +13,7 @@ type AppInputProps = {
 }
 
 export default function AppInput({
+    name,
     showLabel = false,
     label,
     placeholder,
@@ -18,17 +21,28 @@ export default function AppInput({
     secureTextEntry = false,
     containerStyle,
 }: AppInputProps) {
+    const { control } = useFormContext()
+
     return (
         <View style={[styles.container, containerStyle]}>
             {showLabel && <Text style={styles.label}>
                 {label}
                 {required && <Text style={styles.required}> *</Text>}
             </Text>}
-            <TextInput 
-                placeholder={placeholder}
-                style={styles.input}
-                secureTextEntry={secureTextEntry}
-            />
+            <Controller
+                name={name}
+                control={control}
+                render={({field: {onChange, value}}) => (
+                    <TextInput 
+                        placeholder={placeholder}
+                        style={styles.input}
+                        secureTextEntry={secureTextEntry}
+                        value={value ?? ""}
+                        onChangeText={onChange}
+                    />
+                )}
+            >
+            </Controller>
         </View>
     )
 }

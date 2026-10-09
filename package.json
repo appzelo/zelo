@@ -11,6 +11,7 @@
     "express": "^5.2.1",
     "mysql2": "^3.24.5",
     "react": "19.3.0",
+    "react-hook-form": "^7.89.0",
     "react-native": "0.86.3"
   },
   "devDependencies": {
