@@ -7,7 +7,7 @@ export interface User {
     endereco: Address;
 }
 
-interface Address {
+export interface Address {
     cep: string,
     rua: string,
     numero: number,

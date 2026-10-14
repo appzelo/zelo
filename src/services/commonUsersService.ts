@@ -5,6 +5,8 @@ import {
     deleteUser
 } from "../repositories/commonUsersRepository"
 
+import { Address, UserUpdate } from "../types/commonUser";
+
 export async function getUserService(cpf: string) {
     const existingUser = await findUserByCPF(cpf);
 
@@ -21,7 +23,7 @@ export async function createUserService(
     dataNascimento: Date, 
     email: string, 
     celular: string, 
-    endereco: JSON
+    endereco: Address
 ) {
     const existingUser = await findUserByCPF(cpf);
 
@@ -39,7 +41,7 @@ export async function createUserService(
     );
 }
 
-export async function modifyUserService(cpf: string, camposModificados: JSON) {
+export async function modifyUserService(cpf: string, camposModificados: UserUpdate) {
     const existingUser = await findUserByCPF(cpf);
 
     if (!existingUser) {
