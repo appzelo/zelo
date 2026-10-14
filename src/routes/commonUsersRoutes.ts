@@ -11,6 +11,7 @@ import {
 const router = Router();
 
 // Caminhos de rotas para comunicar HTTP com a aplicação
+router.get("/health", (req, res) => res.json(200))
 router.get("/:cpf", getUser);
 router.post("/", createUser);
 router.patch("/:cpf", modifyUser);
