@@ -4,8 +4,35 @@ import SectionText from "../../components/SectionText"
 import { colors } from "../../../constants/colors"
 import AppInput from "../../components/AppInput"
 import AppButton from "../../components/AppButton"
+import { useForm, FormProvider } from "react-hook-form"
 
 export default function guardianRegister() {
+    type GuardianRegisterForm = {
+        fullName: string,
+        // password: string,
+        cpf: string,
+        birthDate: string,
+        email: string,
+        phone: string,
+        relationship: string, 
+    }
+
+    const form = useForm<GuardianRegisterForm>({
+        defaultValues: {
+            fullName: "",
+            // password: "",
+            cpf: "",
+            birthDate: "",
+            email: "",
+            phone: "",
+            relationship: "",
+        }
+    })
+
+    const onSubmit = (data: GuardianRegisterForm) => {
+        console.log(data)
+    }
+
     return(
         <View style={styles.container}>
             <View style={styles.header}>
@@ -25,49 +52,58 @@ export default function guardianRegister() {
                         description="Cadastre a pessoa de referência maior de 18 anos que responderá pelo paciente."
                         titleStyle={{fontSize: 22}}
                     ></SectionText>
-                    <AppInput
-                        showLabel
-                        label="Nome do Responsável"
-                        placeholder="Nome completo do responsável"
-                        required
-                    ></AppInput>
-                    <View style={styles.row}>
-                        <AppInput
-                            containerStyle={{flex: 1}}
-                            showLabel
-                            label="CPF"
-                            placeholder="000.000.000-00"
-                            required
-                        ></AppInput> 
-                        <AppInput
-                            containerStyle={{flex: 1}}
-                            showLabel
-                            label="Nascimento"
-                            placeholder="DD/MM/AAAA"
-                            required
-                        ></AppInput> 
-                    </View>
-                    <AppInput
-                        showLabel
-                        label="E-mail de Contato"
-                        placeholder="email@exemplo.com" 
-                        required
-                    ></AppInput>
-                    <AppInput 
-                        showLabel
-                        label="Celular (WhatsApp)" 
-                        placeholder="(XX) XXXXX-XXXX" 
-                        required
-                    ></AppInput>                            
-                    <AppInput 
-                        showLabel
-                        label="Grau de Parentesco" 
-                        required
-                    ></AppInput>                            
 
+                    <FormProvider {...form}>
+                        <AppInput
+                            name="fullName"
+                            showLabel
+                            label="Nome do Responsável"
+                            placeholder="Nome completo do responsável"
+                            required
+                        ></AppInput>
+                        <View style={styles.row}>
+                            <AppInput
+                                name="cpf"
+                                containerStyle={{flex: 1}}
+                                showLabel
+                                label="CPF"
+                                placeholder="000.000.000-00"
+                                required
+                            ></AppInput> 
+                            <AppInput
+                                name="birthDate"
+                                containerStyle={{flex: 1}}
+                                showLabel
+                                label="Nascimento"
+                                placeholder="DD/MM/AAAA"
+                                required
+                            ></AppInput> 
+                        </View>
+                        <AppInput
+                            name="email"
+                            showLabel
+                            label="E-mail de Contato"
+                            placeholder="email@exemplo.com" 
+                            required
+                        ></AppInput>
+                        <AppInput 
+                            name="phone"
+                            showLabel
+                            label="Celular (WhatsApp)" 
+                            placeholder="(XX) XXXXX-XXXX" 
+                            required
+                        ></AppInput>                            
+                        <AppInput 
+                            name="relationship"
+                            showLabel
+                            label="Grau de Parentesco" 
+                            required
+                        ></AppInput>                            
+                    </FormProvider>
                     <View>
                         <AppButton
                             text="Finalizar Cadastro" 
+                            onPress={form.handleSubmit(onSubmit)}
                         ></AppButton>
                     </View>
                     
