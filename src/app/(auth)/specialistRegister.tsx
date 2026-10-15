@@ -6,10 +6,37 @@ import AppInput from "../../components/AppInput"
 import AppButton from "../../components/AppButton"
 import AppSlider from "../../components/AppSlider"
 import { useState } from "react"
+import { useForm, FormProvider } from "react-hook-form"
 
 export default function specialistRegister() {
     const minValue = 2
     const [currentValue, setCurrentValue] = useState(minValue)
+
+    type GuardianRegisterForm = {
+        fullName: string,
+        // password: string,
+        cpf: string,
+        professionalLicense: string,
+        licenseState: string,
+        primarySpecialty: string, 
+        maxDistance: number,
+    }
+
+    const form = useForm<GuardianRegisterForm>({
+        defaultValues: {
+            fullName: "",
+            // password: "",
+            cpf: "",
+            professionalLicense: "",
+            licenseState: "",
+            primarySpecialty: "",
+            maxDistance: minValue,
+        }
+    })
+
+    const onSubmit = (data: GuardianRegisterForm) => {
+        console.log(data)
+    }
 
     return(
         <View style={styles.container}>
@@ -31,48 +58,54 @@ export default function specialistRegister() {
                         description="Insira seus dados de registro para validação de segurança."
                     ></SectionText>
                     
-                    <AppInput 
-                        showLabel
-                        label="Nome Completo" 
-                        placeholder="Seu nome completo"
-                        required
-                    ></AppInput>
-                    <AppInput 
-                        showLabel
-                        label="CPF" 
-                        placeholder="000.000.000-00" 
-                        required
-                        containerStyle={{flex: 1}}
-                    ></AppInput>
-                    <View style={styles.row}>
+                    <FormProvider {...form}>
                         <AppInput 
+                            name="fullName"
                             showLabel
-                            label="Registro (CRM/COREN)" 
+                            label="Nome Completo" 
+                            placeholder="Seu nome completo"
                             required
-                            containerStyle={{flex: 3}}
                         ></AppInput>
                         <AppInput 
+                            name="cpf"
                             showLabel
-                            label="UF" 
+                            label="CPF" 
+                            placeholder="000.000.000-00" 
                             required
                             containerStyle={{flex: 1}}
                         ></AppInput>
-                    </View>
-                    <AppInput 
-                        showLabel
-                        label="Especialidade Principal" 
-                        required
-                        containerStyle={{flex: 3}}
-                    ></AppInput>
-                    <AppSlider 
-                        title="Distância Máxima de Atendimento" 
-                        minValue={minValue} 
-                        maxValue={50} 
-                        metricUnit="km"
-                        currentValue={currentValue}
-                        onValueChange={setCurrentValue}
-                    ></AppSlider>
-                    <AppButton text="Salvar e Continuar"></AppButton>
+                        <View style={styles.row}>
+                            <AppInput 
+                                name="professionalLicense"
+                                showLabel
+                                label="Registro (CRM/COREN)" 
+                                required
+                                containerStyle={{flex: 3}}
+                            ></AppInput>
+                            <AppInput 
+                                name="licenseState"
+                                showLabel
+                                label="UF" 
+                                required
+                                containerStyle={{flex: 1}}
+                            ></AppInput>
+                        </View>
+                        <AppInput 
+                            name="primarySpecialty"
+                            showLabel
+                            label="Especialidade Principal" 
+                            required
+                            containerStyle={{flex: 3}}
+                        ></AppInput>
+                        <AppSlider 
+                            name="maxDistance"
+                            title="Distância Máxima de Atendimento" 
+                            minValue={minValue} 
+                            maxValue={50} 
+                            metricUnit="km"
+                        ></AppSlider>
+                    </FormProvider>
+                    <AppButton text="Salvar e Continuar" onPress={form.handleSubmit(onSubmit)}></AppButton>
                 </ScrollView>
             </KeyboardAvoidingView>
         </View>
