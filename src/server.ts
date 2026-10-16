@@ -1,5 +1,5 @@
 import express from "express"
-import commonUserRoutes from "./routes/commonUsersRoutes"
+// import commonUserRoutes from "./routes/commonUsersRoutes"
 
 const app = express();
 
@@ -9,7 +9,7 @@ const app = express();
 //})
 
 app.use(express.json());
-app.use("/commonUsers", commonUserRoutes);
+// app.use("/commonUsers", commonUserRoutes);
 
 app.listen(3000, () => {
     console.log("Server rodando em 3000.");
