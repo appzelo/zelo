@@ -5,7 +5,7 @@ import BackHeader from "../../components/BackHeader"
 import SectionText from "../../components/SectionText"
 import ProfileCard from "../../components/ProfileCard"
 import AppButton from "../../components/AppButton"
-import { colors } from "../../../constants/colors"
+import { colors } from "../../utils/constants/colors"
 
 export default function Register() {
     const [selectedCard, setSelectedCard] = useState("patient")

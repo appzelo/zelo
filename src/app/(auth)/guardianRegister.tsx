@@ -1,7 +1,7 @@
 import { View, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from "react-native"
 import BackHeader from "../../components/BackHeader"
 import SectionText from "../../components/SectionText"
-import { colors } from "../../../constants/colors"
+import { colors } from "../../utils/constants/colors"
 import AppInput from "../../components/AppInput"
 import AppButton from "../../components/AppButton"
 import { useForm, FormProvider } from "react-hook-form"

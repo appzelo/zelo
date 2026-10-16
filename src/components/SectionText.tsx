@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native"
-import { colors } from "../../constants/colors"
+import { colors } from "../utils/constants/colors"
 import { StyleProp, TextStyle } from "react-native"
 
 type SectionTextProps = {

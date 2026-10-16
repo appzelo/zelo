@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable, Image, TouchableWithoutFeedback, Keyboard } from "react-native"
 import { router } from "expo-router"
-import { colors } from "../../../constants/colors"
+import { colors } from "../../utils/constants/colors"
 import AppButton from "../../components/AppButton"
 import AppInput from "../../components/AppInput"
 import { useForm, FormProvider } from "react-hook-form"

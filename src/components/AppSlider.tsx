@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from "react-native"
 import Slider from "@react-native-community/slider"
-import { colors } from "../../constants/colors"
+import { colors } from "../utils/constants/colors"
 import { Controller, useFormContext } from "react-hook-form"
 
 type AppSliderProps = {
