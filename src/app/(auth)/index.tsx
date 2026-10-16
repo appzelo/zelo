@@ -28,7 +28,7 @@ export default function Index() {
                 <View style={styles.content}>
                     <View style={styles.header}>
                         {/* <Text style={styles.title}>ZELO</Text> */}
-                        <Image style={styles.zeloImage} source={require("../../../assets/zelo.png")}></Image>
+                        <Image style={styles.zeloImage} source={require("../../assets/zelo.png")}></Image>
                         <Text style={styles.subtitle}>Conforto e cuidado para você.</Text>
                     </View>
 
