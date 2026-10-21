@@ -37,8 +37,9 @@ export default function Index() {
                             <AppInput 
                                 name="identity"
                                 showLabel
-                                label="CPF ou E-mail"
-                                placeholder="Ex.: 123.456.789-00"     
+                                label="CPF"
+                                placeholder="Ex.: 000.000.000-00"     
+                                keyboardType="number-pad"
                             ></AppInput>
                             <View style={styles.passwordGroup}>
                                 <AppInput 

@@ -76,16 +76,18 @@ export default function patientRegister() {
                                 showLabel
                                 label="CPF" 
                                 placeholder="000.000.000-00" 
-                                required
                                 containerStyle={{flex: 1}}
+                                keyboardType="number-pad"
+                                required
                             ></AppInput>
                             <AppInput 
                                 name="birthDate"
                                 showLabel
                                 label="Nascimento" 
                                 placeholder="DD/MM/AAAA" 
-                                required
                                 containerStyle={{flex: 1}}
+                                keyboardType="number-pad"
+                                required
                             ></AppInput>
                         </View>
                         {/* <AppInput showLabel label="Necessidade Especial/Deficiência"></AppInput> */}
@@ -95,16 +97,18 @@ export default function patientRegister() {
                                 showLabel
                                 label="E-mail de Contato" 
                                 placeholder="email@exemplo.com" 
-                                required
                                 containerStyle={{flex: 1}}
+                                keyboardType="email-address"
+                                required
                             ></AppInput>
                             <AppInput 
                                 name="phone"
                                 showLabel
                                 label="Celular" 
                                 placeholder="(XX) XXXXX-XXXX" 
-                                required
                                 containerStyle={{flex: 1}}
+                                keyboardType="phone-pad"
+                                required
                             ></AppInput>
                         </View>
 
@@ -118,6 +122,7 @@ export default function patientRegister() {
                             showLabel
                             label="CEP" 
                             placeholder="00000-000"
+                            keyboardType="number-pad"
                             required
                         ></AppInput>
                         <View style={styles.row}>
@@ -125,15 +130,16 @@ export default function patientRegister() {
                                 name="street"
                                 showLabel
                                 label="Rua/Avenida" 
-                                required
                                 containerStyle={{flex: 2}}
+                                required
                             ></AppInput>
                             <AppInput
                                 name="streetNumber"
                                 showLabel
                                 label="Nº" 
-                                required
                                 containerStyle={{flex: 1}}
+                                keyboardType="number-pad"
+                                required
                             ></AppInput>
                         </View>
                         <AppInput
@@ -147,15 +153,15 @@ export default function patientRegister() {
                                 name="city"
                                 showLabel
                                 label="Cidade" 
-                                required
                                 containerStyle={{flex: 3}}
+                                required
                             ></AppInput>
                             <AppInput
                                 name="state"
                                 showLabel
                                 label="UF" 
-                                required
                                 containerStyle={{flex: 1}}
+                                required
                             ></AppInput>
                         </View>
                     </FormProvider>

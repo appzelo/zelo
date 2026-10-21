@@ -71,8 +71,9 @@ export default function specialistRegister() {
                             showLabel
                             label="CPF" 
                             placeholder="000.000.000-00" 
-                            required
                             containerStyle={{flex: 1}}
+                            keyboardType="number-pad"
+                            required
                         ></AppInput>
                         <View style={styles.row}>
                             <AppInput 

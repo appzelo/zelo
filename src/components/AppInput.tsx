@@ -1,4 +1,4 @@
-import { View, Text, TextInput, StyleSheet, StyleProp, ViewStyle } from "react-native"
+import { View, Text, TextInput, StyleSheet, StyleProp, ViewStyle, KeyboardTypeOptions } from "react-native"
 import { colors } from "../utils/constants/colors"
 import { Controller, useFormContext } from "react-hook-form"
 
@@ -7,9 +7,10 @@ type AppInputProps = {
     showLabel?: boolean,
     label?: string,
     placeholder?: string,
-    required?: boolean,
     secureTextEntry?: boolean,
-    containerStyle?: StyleProp<ViewStyle>
+    containerStyle?: StyleProp<ViewStyle>,
+    keyboardType?: KeyboardTypeOptions,
+    required?: boolean,
 }
 
 export default function AppInput({
@@ -17,9 +18,10 @@ export default function AppInput({
     showLabel = false,
     label,
     placeholder,
-    required = false,
     secureTextEntry = false,
     containerStyle,
+    keyboardType = "default",
+    required = false,
 }: AppInputProps) {
     const { control } = useFormContext()
 
@@ -39,6 +41,7 @@ export default function AppInput({
                         secureTextEntry={secureTextEntry}
                         value={value ?? ""}
                         onChangeText={onChange}
+                        keyboardType={keyboardType}
                     />
                 )}
             >
