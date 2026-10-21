@@ -9,7 +9,7 @@ import { useForm, FormProvider } from "react-hook-form"
 export default function patientRegister() {
     type PatientRegisterForm = {
         fullName: string,
-        // password: string,
+        password: string,
         cpf: string,
         birthDate: string,
         email: string,
@@ -24,7 +24,7 @@ export default function patientRegister() {
     const form = useForm<PatientRegisterForm>({
         defaultValues: {
             fullName: "",
-            // password: "",
+            password: "",
             cpf: "",
             birthDate: "",
             email: "",
@@ -90,27 +90,33 @@ export default function patientRegister() {
                                 required
                             ></AppInput>
                         </View>
+                        <AppInput 
+                            name="password"
+                            showLabel
+                            label="Senha" 
+                            placeholder="Digite sua senha" 
+                            secureTextEntry={true}
+                            required
+                        ></AppInput>
                         {/* <AppInput showLabel label="Necessidade Especial/Deficiência"></AppInput> */}
-                        <View style={styles.row}>
-                            <AppInput 
-                                name="email"
-                                showLabel
-                                label="E-mail de Contato" 
-                                placeholder="email@exemplo.com" 
-                                containerStyle={{flex: 1}}
-                                keyboardType="email-address"
-                                required
-                            ></AppInput>
-                            <AppInput 
-                                name="phone"
-                                showLabel
-                                label="Celular" 
-                                placeholder="(XX) XXXXX-XXXX" 
-                                containerStyle={{flex: 1}}
-                                keyboardType="phone-pad"
-                                required
-                            ></AppInput>
-                        </View>
+                        <AppInput 
+                            name="email"
+                            showLabel
+                            label="E-mail de Contato" 
+                            placeholder="email@exemplo.com" 
+                            containerStyle={{flex: 1}}
+                            keyboardType="email-address"
+                            required
+                        ></AppInput>
+                        <AppInput 
+                            name="phone"
+                            showLabel
+                            label="Celular" 
+                            placeholder="(XX) XXXXX-XXXX" 
+                            containerStyle={{flex: 1}}
+                            keyboardType="phone-pad"
+                            required
+                        ></AppInput>
 
                         {/* Seção de dados do endereço */}
                         <SectionText 

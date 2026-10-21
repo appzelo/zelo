@@ -9,7 +9,7 @@ import { useForm, FormProvider } from "react-hook-form"
 export default function guardianRegister() {
     type GuardianRegisterForm = {
         fullName: string,
-        // password: string,
+        password: string,
         cpf: string,
         birthDate: string,
         email: string,
@@ -20,7 +20,7 @@ export default function guardianRegister() {
     const form = useForm<GuardianRegisterForm>({
         defaultValues: {
             fullName: "",
-            // password: "",
+            password: "",
             cpf: "",
             birthDate: "",
             email: "",
@@ -81,6 +81,14 @@ export default function guardianRegister() {
                                 required
                             ></AppInput> 
                         </View>
+                        <AppInput 
+                            name="password"
+                            showLabel
+                            label="Senha" 
+                            placeholder="Digite sua senha" 
+                            secureTextEntry={true}
+                            required
+                        ></AppInput>
                         <AppInput
                             name="email"
                             showLabel

@@ -14,7 +14,7 @@ export default function specialistRegister() {
 
     type GuardianRegisterForm = {
         fullName: string,
-        // password: string,
+        password: string,
         cpf: string,
         professionalLicense: string,
         licenseState: string,
@@ -25,7 +25,7 @@ export default function specialistRegister() {
     const form = useForm<GuardianRegisterForm>({
         defaultValues: {
             fullName: "",
-            // password: "",
+            password: "",
             cpf: "",
             professionalLicense: "",
             licenseState: "",
@@ -73,6 +73,14 @@ export default function specialistRegister() {
                             placeholder="000.000.000-00" 
                             containerStyle={{flex: 1}}
                             keyboardType="number-pad"
+                            required
+                        ></AppInput>
+                        <AppInput 
+                            name="password"
+                            showLabel
+                            label="Senha" 
+                            placeholder="Digite sua senha" 
+                            secureTextEntry={true}
                             required
                         ></AppInput>
                         <View style={styles.row}>
