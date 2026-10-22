@@ -1,3 +1,4 @@
+import "dotenv/config"
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from "react-native"
 import BackHeader from "../../components/BackHeader"
 import SectionText from "../../components/SectionText"
@@ -44,7 +45,17 @@ export default function patientRegister() {
     })
 
     const onSubmit = (data: PatientRegisterForm) => {
-        console.log(data)
+        // console.log(data)
+        fetch(`${process.env.EXPO_PUBLIC_USER_API}/commonUsers`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(json => console.log(json))
     }
 
     return(
