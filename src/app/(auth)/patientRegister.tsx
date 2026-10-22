@@ -11,14 +11,17 @@ export default function patientRegister() {
         fullName: string,
         password: string,
         cpf: string,
-        birthDate: string,
+        birthDate: Date,
         email: string,
         phone: string,
-        zipCode: string,
-        street: string,
-        streetNumber: string,
-        city: string,
-        state: string,
+        address: {
+            zipCode: string,
+            street: string,
+            streetNumber: string,
+            neighborhood: string,
+            city: string,
+            state: string,
+        }
     }
 
     const form = useForm<PatientRegisterForm>({
@@ -29,11 +32,14 @@ export default function patientRegister() {
             birthDate: "",
             email: "",
             phone: "",
-            zipCode: "",
-            street: "",
-            streetNumber: "",
-            city: "",
-            state: "",
+            address: {                
+                zipCode: "",
+                street: "",
+                streetNumber: "",
+                neighborhood: "",
+                city: "",
+                state: "",
+            }
         }
     })
 
@@ -124,7 +130,7 @@ export default function patientRegister() {
                             titleStyle={{fontSize: 18}}
                         ></SectionText>
                         <AppInput
-                            name="zipCode"
+                            name="address.zipCode"
                             showLabel
                             label="CEP" 
                             placeholder="00000-000"
@@ -133,14 +139,14 @@ export default function patientRegister() {
                         ></AppInput>
                         <View style={styles.row}>
                             <AppInput
-                                name="street"
+                                name="address.street"
                                 showLabel
                                 label="Rua/Avenida" 
                                 containerStyle={{flex: 2}}
                                 required
                             ></AppInput>
                             <AppInput
-                                name="streetNumber"
+                                name="address.streetNumber"
                                 showLabel
                                 label="Nº" 
                                 containerStyle={{flex: 1}}
@@ -149,21 +155,21 @@ export default function patientRegister() {
                             ></AppInput>
                         </View>
                         <AppInput
-                            name="neighborhood"
+                            name="address.neighborhood"
                             showLabel
                             label="Bairro" 
                             required
                         ></AppInput>
                         <View style={styles.row}>
                             <AppInput
-                                name="city"
+                                name="address.city"
                                 showLabel
                                 label="Cidade" 
                                 containerStyle={{flex: 3}}
                                 required
                             ></AppInput>
                             <AppInput
-                                name="state"
+                                name="address.state"
                                 showLabel
                                 label="UF" 
                                 containerStyle={{flex: 1}}

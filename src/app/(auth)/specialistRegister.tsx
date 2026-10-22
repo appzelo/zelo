@@ -19,7 +19,9 @@ export default function specialistRegister() {
         professionalLicense: string,
         licenseState: string,
         primarySpecialty: string, 
-        maxDistance: number,
+        maxDistance: string,
+        email: string,
+        phone: string
     }
 
     const form = useForm<GuardianRegisterForm>({
@@ -31,6 +33,8 @@ export default function specialistRegister() {
             licenseState: "",
             primarySpecialty: "",
             maxDistance: minValue,
+            email: "",
+            phnoe: ""
         }
     })
 
