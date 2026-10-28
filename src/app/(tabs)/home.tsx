@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet } from "react-native"
+import { router } from "expo-router"
 import { colors } from "../../utils/constants/colors"
 import LocationHeader from "../../components/LocationHeader"
 import ActionCard from "../../components/ActionCard"
-import BottomNav from "../../components/BottomNav"
 
 export default function Home() {
     return (
@@ -21,6 +21,7 @@ export default function Home() {
                     <ActionCard
                         title="Buscar especialista"
                         icon="search"
+                        onPress={() => router.navigate("/search")}
                     />
                     <ActionCard
                         title="Verificar Agendamentos"
@@ -28,8 +29,6 @@ export default function Home() {
                     />
                 </View>
             </View>
-
-            <BottomNav activeTab="home" />
         </View>
     )
 }

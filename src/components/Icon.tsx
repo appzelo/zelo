@@ -1,6 +1,6 @@
 import { View } from "react-native"
 
-export type IconName = "search" | "calendar" | "home" | "map-pin"
+export type IconName = "search" | "calendar" | "home" | "map-pin" | "filter"
 
 type IconProps = {
     name: IconName,
@@ -131,6 +131,53 @@ export default function Icon({
                     backgroundColor: color,
                     borderTopLeftRadius: s * 0.04,
                     borderTopRightRadius: s * 0.04,
+                }} />
+            </View>
+        )
+    }
+
+    if (name === "filter") {
+        const knob = s * 0.28
+
+        return (
+            <View style={{ width: s, height: s }}>
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.08,
+                    top: s * 0.34 - sw / 2,
+                    width: s * 0.84,
+                    height: sw,
+                    borderRadius: sw / 2,
+                    backgroundColor: color,
+                }} />
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.62 - knob / 2,
+                    top: s * 0.34 - knob / 2,
+                    width: knob,
+                    height: knob,
+                    borderRadius: knob / 2,
+                    borderWidth: sw,
+                    borderColor: color,
+                }} />
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.08,
+                    top: s * 0.68 - sw / 2,
+                    width: s * 0.84,
+                    height: sw,
+                    borderRadius: sw / 2,
+                    backgroundColor: color,
+                }} />
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.36 - knob / 2,
+                    top: s * 0.68 - knob / 2,
+                    width: knob,
+                    height: knob,
+                    borderRadius: knob / 2,
+                    borderWidth: sw,
+                    borderColor: color,
                 }} />
             </View>
         )
