@@ -1,21 +1,24 @@
-import { View, Text, StyleSheet } from "react-native"
+import { View, Text, Pressable, StyleSheet } from "react-native"
 import { colors } from "../utils/constants/colors"
 import { Specialist } from "../services/specialists"
+import Avatar from "./Avatar"
 
 type SpecialistCardProps = {
     specialist: Specialist,
+    onPress?: () => void,
 }
 
 export default function SpecialistCard({
     specialist,
+    onPress,
 }: SpecialistCardProps) {
     return (
-        <View style={styles.card}>
+        <Pressable
+            style={({ pressed }) => [styles.card, pressed && onPress !== undefined && styles.cardPressed]}
+            onPress={onPress}
+        >
             <View style={styles.top}>
-                <View style={styles.avatar}>
-                    <View style={styles.avatarHead}></View>
-                    <View style={styles.avatarBody}></View>
-                </View>
+                <Avatar size={46} />
 
                 <View style={styles.info}>
                     <Text style={styles.name}>{specialist.name}</Text>
@@ -47,7 +50,7 @@ export default function SpecialistCard({
                     <Text style={styles.perHour}>/h</Text>
                 </View>
             </View>
-        </View>
+        </Pressable>
     )
 }
 
@@ -61,38 +64,14 @@ const styles = StyleSheet.create({
         width: "100%",
     },
 
+    cardPressed: {
+        opacity: 0.85,
+    },
+
     top: {
         alignItems: "center",
         flexDirection: "row",
         gap: 12,
-    },
-
-    avatar: {
-        alignItems: "center",
-        backgroundColor: colors.gray3,
-        borderRadius: 23,
-        height: 46,
-        overflow: "hidden",
-        paddingTop: 9,
-        width: 46,
-    },
-
-    avatarHead: {
-        backgroundColor: colors.gray2,
-        borderRadius: 8,
-        height: 16,
-        opacity: 0.35,
-        width: 16,
-    },
-
-    avatarBody: {
-        backgroundColor: colors.gray2,
-        borderTopLeftRadius: 15,
-        borderTopRightRadius: 15,
-        height: 22,
-        marginTop: 3,
-        opacity: 0.35,
-        width: 30,
     },
 
     info: {

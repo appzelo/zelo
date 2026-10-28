@@ -1,6 +1,6 @@
 import { View } from "react-native"
 
-export type IconName = "search" | "calendar" | "home" | "map-pin" | "filter"
+export type IconName = "search" | "calendar" | "home" | "map-pin" | "filter" | "person" | "clock"
 
 type IconProps = {
     name: IconName,
@@ -178,6 +178,70 @@ export default function Icon({
                     borderRadius: knob / 2,
                     borderWidth: sw,
                     borderColor: color,
+                }} />
+            </View>
+        )
+    }
+
+    if (name === "person") {
+        return (
+            <View style={{ width: s, height: s }}>
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.30,
+                    top: s * 0.10,
+                    width: s * 0.40,
+                    height: s * 0.40,
+                    borderRadius: s * 0.20,
+                    backgroundColor: color,
+                }} />
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.14,
+                    top: s * 0.56,
+                    width: s * 0.72,
+                    height: s * 0.40,
+                    borderTopLeftRadius: s * 0.36,
+                    borderTopRightRadius: s * 0.36,
+                    backgroundColor: color,
+                }} />
+            </View>
+        )
+    }
+
+    if (name === "clock") {
+        const ring = s * 0.86
+        const offset = (s - ring) / 2
+
+        return (
+            <View style={{ width: s, height: s }}>
+                <View style={{
+                    position: "absolute",
+                    left: offset,
+                    top: offset,
+                    width: ring,
+                    height: ring,
+                    borderRadius: ring / 2,
+                    borderWidth: sw,
+                    borderColor: color,
+                }} />
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.5 - sw / 2,
+                    top: s * 0.26,
+                    width: sw,
+                    height: s * 0.25,
+                    borderRadius: sw / 2,
+                    backgroundColor: color,
+                }} />
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.5,
+                    top: s * 0.5 - sw / 2,
+                    width: s * 0.22,
+                    height: sw,
+                    borderRadius: sw / 2,
+                    backgroundColor: color,
                 }} />
             </View>
         )

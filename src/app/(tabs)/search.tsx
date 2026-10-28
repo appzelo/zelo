@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { View, Text, ScrollView, StyleSheet, TouchableWithoutFeedback, Keyboard } from "react-native"
+import { router } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { colors } from "../../utils/constants/colors"
 import SearchBar from "../../components/SearchBar"
@@ -43,7 +44,11 @@ export default function Search() {
                         showsVerticalScrollIndicator={false}
                     >
                         {results?.map((specialist) => (
-                            <SpecialistCard key={specialist.id} specialist={specialist} />
+                            <SpecialistCard
+                                key={specialist.id}
+                                specialist={specialist}
+                                onPress={() => router.push(`/specialist/${specialist.id}`)}
+                            />
                         ))}
 
                         {results?.length === 0 && (
