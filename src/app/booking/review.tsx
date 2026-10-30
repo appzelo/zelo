@@ -63,9 +63,7 @@ export default function BookingReview() {
             router.replace({
                 pathname: "/booking/sent",
                 params: {
-                    specialistId: booking.specialistId,
-                    date: booking.date,
-                    time: booking.time,
+                    bookingId: booking.id,
                 },
             })
         } catch {

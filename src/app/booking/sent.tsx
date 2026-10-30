@@ -1,24 +1,23 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from "react-native"
 import { router, useLocalSearchParams } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { colors } from "../../utils/constants/colors"
 import { formatShortDateKey } from "../../utils/format"
+import { Booking, getBooking, subscribeBooking } from "../../services/bookings"
 import { Specialist, getSpecialist } from "../../services/specialists"
 import { Patient, getPatient } from "../../services/patient"
 import AppButton from "../../components/AppButton"
 import Icon from "../../components/Icon"
 
-type StepState = "done" | "current" | "pending"
+type StepState = "done" | "current" | "pending" | "rejected"
 
 export default function BookingSent() {
-    const { specialistId, date, time } = useLocalSearchParams<{
-        specialistId: string,
-        date: string,
-        time: string,
-    }>()
+    const { bookingId } = useLocalSearchParams<{ bookingId: string }>()
     const insets = useSafeAreaInsets()
+    const redirected = useRef(false)
 
+    const [booking, setBooking] = useState<Booking | null>(null)
     const [specialist, setSpecialist] = useState<Specialist | null>(null)
     const [patient, setPatient] = useState<Patient | null>(null)
     const [loaded, setLoaded] = useState(false)
@@ -26,12 +25,27 @@ export default function BookingSent() {
     useEffect(() => {
         let active = true
 
-        Promise.all([getSpecialist(specialistId), getPatient()]).then(([found, currentPatient]) => {
+        getBooking(bookingId).then(async (found) => {
             if (!active) {
                 return
             }
 
-            setSpecialist(found)
+            if (!found) {
+                setLoaded(true)
+                return
+            }
+
+            const [foundSpecialist, currentPatient] = await Promise.all([
+                getSpecialist(found.specialistId),
+                getPatient(),
+            ])
+
+            if (!active) {
+                return
+            }
+
+            setBooking(found)
+            setSpecialist(foundSpecialist)
             setPatient(currentPatient)
             setLoaded(true)
         })
@@ -39,7 +53,25 @@ export default function BookingSent() {
         return () => {
             active = false
         }
-    }, [specialistId])
+    }, [bookingId])
+
+    // Assim que o profissional aceita, a tela vira a Consulta Confirmada.
+    useEffect(() => {
+        if (!bookingId) {
+            return
+        }
+
+        return subscribeBooking(bookingId, (updated) => {
+            setBooking(updated)
+
+            if (updated.status === "accepted" && !redirected.current) {
+                redirected.current = true
+                router.replace(`/appointment/${updated.id}`)
+            }
+        })
+    }, [bookingId])
+
+    const rejected = booking?.status === "rejected"
 
     const steps: { title: string, description: string, state: StepState }[] = [
         {
@@ -49,10 +81,12 @@ export default function BookingSent() {
         },
         {
             title: "Confirmação do Profissional",
-            description: specialist
-                ? `${specialist.name} está revisando a rota e os detalhes médicos.`
-                : "O profissional está revisando a rota e os detalhes médicos.",
-            state: "current",
+            description: rejected
+                ? `${specialist?.name ?? "O profissional"} não pôde atender este horário.`
+                : specialist
+                    ? `${specialist.name} está revisando a rota e os detalhes médicos.`
+                    : "O profissional está revisando a rota e os detalhes médicos.",
+            state: rejected ? "rejected" : "current",
         },
         {
             title: "Atendimento Domiciliar",
@@ -69,26 +103,35 @@ export default function BookingSent() {
                 </View>
             )}
 
-            {loaded && (!specialist || !patient) && (
+            {loaded && (!booking || !specialist || !patient) && (
                 <View style={styles.centered}>
                     <Text style={styles.empty}>Não foi possível carregar a solicitação.</Text>
                 </View>
             )}
 
-            {specialist && patient && (
+            {booking && specialist && patient && (
                 <>
                     <ScrollView
                         contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 44 }]}
                         showsVerticalScrollIndicator={false}
                     >
-                        <View style={styles.clockCircle}>
-                            <Icon name="clock" size={38} color={colors.green1} strokeWidth={2} />
+                        <View style={[styles.clockCircle, rejected && styles.circleRejected]}>
+                            <Icon
+                                name={rejected ? "alert" : "clock"}
+                                size={38}
+                                color={rejected ? colors.red1 : colors.green1}
+                                strokeWidth={2}
+                            />
                         </View>
 
                         <View style={styles.intro}>
-                            <Text style={styles.title}>Solicitação Enviada!</Text>
+                            <Text style={[styles.title, rejected && styles.titleRejected]}>
+                                {rejected ? "Solicitação Recusada" : "Solicitação Enviada!"}
+                            </Text>
                             <Text style={styles.subtitle}>
-                                {`Aguardando confirmação do ${specialist.name}. Você será notificado em instantes.`}
+                                {rejected
+                                    ? "Este horário não foi confirmado. Você pode buscar outro profissional."
+                                    : `Aguardando confirmação do ${specialist.name}. Você será notificado em instantes.`}
                             </Text>
                         </View>
 
@@ -97,7 +140,7 @@ export default function BookingSent() {
                             <SummaryRow label="Paciente:" value={patient.name} />
                             <SummaryRow
                                 label="Data / Hora:"
-                                value={`${formatShortDateKey(date)} às ${time}`}
+                                value={`${formatShortDateKey(booking.date)} às ${booking.time}`}
                             />
                         </View>
 
@@ -162,6 +205,14 @@ function StepIcon({ state }: { state: StepState }) {
         )
     }
 
+    if (state === "rejected") {
+        return (
+            <View style={[styles.stepIcon, styles.stepIconRejected]}>
+                <Text style={styles.check}>✕</Text>
+            </View>
+        )
+    }
+
     return <View style={[styles.stepIcon, styles.stepIconPending]}></View>
 }
 
@@ -202,6 +253,10 @@ const styles = StyleSheet.create({
         width: 84,
     },
 
+    circleRejected: {
+        borderColor: colors.red1,
+    },
+
     intro: {
         gap: 8,
     },
@@ -213,14 +268,16 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
 
+    titleRejected: {
+        color: colors.red1,
+    },
+
     subtitle: {
         color: colors.gray2,
         fontSize: 14,
         lineHeight: 20,
         textAlign: "center",
-    },
-
-    summaryCard: {
+    },    summaryCard: {
         backgroundColor: colors.white2,
         borderColor: colors.gray1,
         borderRadius: 12,
@@ -302,6 +359,10 @@ const styles = StyleSheet.create({
 
     stepIconCurrent: {
         backgroundColor: colors.yellow1,
+    },
+
+    stepIconRejected: {
+        backgroundColor: colors.red1,
     },
 
     stepIconPending: {

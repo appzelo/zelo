@@ -84,5 +84,50 @@ export async function createBooking(input: CreateBookingInput): Promise<Booking>
 }
 
 export async function getBooking(id: string): Promise<Booking | null> {
-    return BOOKINGS.find((booking) => booking.id === id) ?? null
+    const booking = BOOKINGS.find((item) => item.id === id)
+
+    // Cópia: quem consome não mexe no registro em memória sem passar pelo serviço.
+    return booking ? { ...booking } : null
+}
+
+type BookingListener = (booking: Booking) => void
+
+const LISTENERS = new Map<string, Set<BookingListener>>()
+
+/**
+ * Avisa quando o status de um agendamento muda (ex.: o profissional aceita
+ * a solicitação). Retorna a função para cancelar a inscrição.
+ */
+export function subscribeBooking(id: string, listener: BookingListener) {
+    const listeners = LISTENERS.get(id) ?? new Set<BookingListener>()
+
+    listeners.add(listener)
+    LISTENERS.set(id, listeners)
+
+    return () => {
+        listeners.delete(listener)
+
+        if (listeners.size === 0) {
+            LISTENERS.delete(id)
+        }
+    }
+}
+
+export async function updateBookingStatus(
+    id: string,
+    status: BookingStatus,
+): Promise<Booking | null> {
+    const booking = BOOKINGS.find((item) => item.id === id)
+
+    if (!booking) {
+        return null
+    }
+
+    booking.status = status
+
+    const updated = { ...booking }
+
+    LISTENERS.get(id)?.forEach((listener) => listener(updated))
+
+    return updated
 }
