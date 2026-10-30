@@ -7,6 +7,7 @@ type AppButtonProps = {
 	onPress?: () => void,
 	variant?: "primary" | "secondary",
 	icon?: IconName,
+	disabled?: boolean,
 }
 
 export default function AppButton({
@@ -14,6 +15,7 @@ export default function AppButton({
 	onPress,
 	variant = "primary",
 	icon,
+	disabled = false,
 }: AppButtonProps) {
 	const primary = variant === "primary"
 
@@ -23,8 +25,10 @@ export default function AppButton({
 				styles.button, 
 				primary && styles.primaryButton,
 				variant === "secondary" && styles.secondaryButton,
+				disabled && styles.disabled,
 			]} 
 			onPress={onPress}
+			disabled={disabled}
 		>
 			<View style={styles.content}>
 				{icon && (
@@ -85,5 +89,9 @@ const styles = StyleSheet.create({
 
 	secondaryText: {
         color: colors.blue1,
+	},
+
+	disabled: {
+		opacity: 0.45,
 	},
 })

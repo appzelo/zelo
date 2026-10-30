@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react"
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from "react-native"
-import { router, useLocalSearchParams } from "expo-router"
+import { useCallback, useEffect, useState } from "react"
+import { View, Text, ScrollView, Pressable, ActivityIndicator, StyleSheet } from "react-native"
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { colors } from "../../utils/constants/colors"
-import { formatCurrency, formatDateKey } from "../../utils/format"
+import { formatCurrency, formatDateKey, formatTimestamp } from "../../utils/format"
 import { Specialist, getSpecialist } from "../../services/specialists"
 import { Patient, getPatient } from "../../services/patient"
 import { calculateTotals, createBooking } from "../../services/bookings"
+import { Consent, acceptConsent, getConsent } from "../../services/consent"
 import BackHeader from "../../components/BackHeader"
 import AppButton from "../../components/AppButton"
 import Icon, { IconName } from "../../components/Icon"
@@ -23,6 +24,8 @@ export default function BookingReview() {
 
     const [specialist, setSpecialist] = useState<Specialist | null>(null)
     const [patient, setPatient] = useState<Patient | null>(null)
+    const [consent, setConsent] = useState<Consent | null>(null)
+    const [accepted, setAccepted] = useState(false)
     const [loaded, setLoaded] = useState(false)
     const [sending, setSending] = useState(false)
 
@@ -44,8 +47,33 @@ export default function BookingReview() {
         }
     }, [specialistId])
 
+    // Relê o aceite ao voltar da tela do termo.
+    const loadConsent = useCallback(() => {
+        if (!patient) {
+            return
+        }
+
+        let active = true
+
+        getConsent(patient.id).then((found) => {
+            if (active) {
+                setConsent(found)
+            }
+        })
+
+        return () => {
+            active = false
+        }
+    }, [patient])
+
+    useEffect(() => loadConsent(), [loadConsent])
+
+    useFocusEffect(loadConsent)
+
+    const canSend = Boolean(consent) || accepted
+
     async function handleSubmit() {
-        if (!specialist || !patient || sending) {
+        if (!specialist || !patient || sending || !canSend) {
             return
         }
 
@@ -60,6 +88,9 @@ export default function BookingReview() {
                 needs: NEEDS,
             })
 
+            // O aceite só é registrado quando a solicitação é enviada.
+            await acceptConsent(patient.id)
+
             router.replace({
                 pathname: "/booking/sent",
                 params: {
@@ -72,6 +103,19 @@ export default function BookingReview() {
     }
 
     const totals = specialist ? calculateTotals(specialist) : null
+
+    function openTerm() {
+        if (!patient) {
+            return
+        }
+
+        router.push({
+            pathname: "/terms/[patientId]",
+            params: {
+                patientId: patient.id,
+            },
+        })
+    }
 
     return (
         <View style={styles.container}>
@@ -142,12 +186,62 @@ export default function BookingReview() {
                                 <Text style={styles.totalValue}>{formatCurrency(totals.total)}</Text>
                             </View>
                         </View>
+
+                        <View style={styles.consentCard}>
+                            {consent ? (
+                                <View style={styles.consentSigned}>
+                                    <View style={[styles.consentCheck, styles.consentCheckOn]}>
+                                        <Text style={styles.consentCheckMark}>✓</Text>
+                                    </View>
+
+                                    <View style={styles.consentSignedText}>
+                                        <Text style={styles.consentTitle}>Termo aceito</Text>
+                                        <Text style={styles.consentMeta}>
+                                            {formatTimestamp(consent.acceptedAt, false)}
+                                        </Text>
+                                    </View>
+
+                                    <Pressable onPress={openTerm} hitSlop={8}>
+                                        <Text style={styles.consentLink}>Ver</Text>
+                                    </Pressable>
+                                </View>
+                            ) : (
+                                <>
+                                    <Pressable
+                                        style={styles.consentRow}
+                                        onPress={() => setAccepted((value) => !value)}
+                                    >
+                                        <View
+                                            style={[
+                                                styles.consentCheck,
+                                                accepted && styles.consentCheckOn,
+                                            ]}
+                                        >
+                                            {accepted && (
+                                                <Text style={styles.consentCheckMark}>✓</Text>
+                                            )}
+                                        </View>
+
+                                        <Text style={styles.consentText}>
+                                            Li e aceito o Termo de Consentimento.
+                                        </Text>
+                                    </Pressable>
+
+                                    <Pressable onPress={openTerm} hitSlop={8}>
+                                        <Text style={styles.consentLinkIndented}>
+                                            Ler termo completo
+                                        </Text>
+                                    </Pressable>
+                                </>
+                            )}
+                        </View>
                     </ScrollView>
 
                     <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) + 8 }]}>
                         <AppButton
                             text={sending ? "Enviando..." : "Enviar Solicitação"}
                             onPress={handleSubmit}
+                            disabled={!canSend || sending}
                         />
                     </View>
                 </>
@@ -322,6 +416,85 @@ const styles = StyleSheet.create({
         color: colors.green1,
         fontSize: 16,
         fontWeight: "bold",
+    },
+
+    consentCard: {
+        backgroundColor: colors.white2,
+        borderColor: colors.gray1,
+        borderRadius: 12,
+        borderWidth: 1.5,
+        gap: 10,
+        padding: 12,
+    },
+
+    consentRow: {
+        alignItems: "center",
+        flexDirection: "row",
+        gap: 10,
+    },
+
+    consentSigned: {
+        alignItems: "center",
+        flexDirection: "row",
+        gap: 10,
+    },
+
+    consentCheck: {
+        alignItems: "center",
+        borderColor: colors.gray1,
+        borderRadius: 6,
+        borderWidth: 2,
+        height: 22,
+        justifyContent: "center",
+        width: 22,
+    },
+
+    consentCheckOn: {
+        backgroundColor: colors.green1,
+        borderColor: colors.green1,
+    },
+
+    consentCheckMark: {
+        color: colors.white2,
+        fontSize: 12,
+        fontWeight: "bold",
+    },
+
+    consentText: {
+        color: colors.dark1,
+        flex: 1,
+        fontSize: 12.5,
+        lineHeight: 17,
+    },
+
+    consentSignedText: {
+        flex: 1,
+        gap: 2,
+    },
+
+    consentTitle: {
+        color: colors.dark1,
+        fontSize: 13,
+        fontWeight: "bold",
+    },
+
+    consentMeta: {
+        color: colors.gray2,
+        fontSize: 11.5,
+        lineHeight: 15,
+    },
+
+    consentLink: {
+        color: colors.green1,
+        fontSize: 12.5,
+        fontWeight: "bold",
+    },
+
+    consentLinkIndented: {
+        color: colors.green1,
+        fontSize: 12.5,
+        fontWeight: "bold",
+        paddingLeft: 32,
     },
 
     footer: {

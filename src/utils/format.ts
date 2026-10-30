@@ -133,6 +133,25 @@ export function isTodayKey(key: string) {
     return key === dateKey(new Date())
 }
 
+/**
+ * "2026-10-29T20:54:00.000Z" -> "29/10/2026 às 20:54"
+ */
+export function formatTimestamp(iso: string, withTime = true) {
+    const date = new Date(iso)
+
+    if (Number.isNaN(date.getTime())) {
+        return iso
+    }
+
+    const day = `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`
+
+    if (!withTime) {
+        return day
+    }
+
+    return `${day} às ${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
 export function formatCurrency(value: number) {
     const [integer, decimals] = value.toFixed(2).split(".")
     const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
