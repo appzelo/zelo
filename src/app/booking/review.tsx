@@ -6,13 +6,24 @@ import { colors } from "../../utils/constants/colors"
 import { formatCurrency, formatDateKey, formatTimestamp } from "../../utils/format"
 import { Specialist, getSpecialist } from "../../services/specialists"
 import { Patient, getPatient } from "../../services/patient"
-import { calculateTotals, createBooking } from "../../services/bookings"
+import { calculateTotals, createBooking, isBookingConflict, BookingConflict } from "../../services/bookings"
 import { Consent, acceptConsent, getConsent } from "../../services/consent"
 import BackHeader from "../../components/BackHeader"
 import AppButton from "../../components/AppButton"
 import Icon, { IconName } from "../../components/Icon"
 
 const NEEDS = "Auxílio para locomoção (andador). Sequelas leves de AVC, foco em fisioterapia motora."
+
+const CONFLICT: Record<BookingConflict, { title: string, hint: string }> = {
+    "slot-taken": {
+        title: "Este horário acabou de ser ocupado",
+        hint: "Escolha outro horário para concluir o agendamento.",
+    },
+    "patient-day": {
+        title: "Você já tem um atendimento neste dia",
+        hint: "Limite de 1 atendimento por paciente ao dia.",
+    },
+}
 
 export default function BookingReview() {
     const { specialistId, date, time } = useLocalSearchParams<{
@@ -28,6 +39,7 @@ export default function BookingReview() {
     const [accepted, setAccepted] = useState(false)
     const [loaded, setLoaded] = useState(false)
     const [sending, setSending] = useState(false)
+    const [conflict, setConflict] = useState<BookingConflict | null>(null)
 
     useEffect(() => {
         let active = true
@@ -97,8 +109,12 @@ export default function BookingReview() {
                     bookingId: booking.id,
                 },
             })
-        } catch {
+        } catch (error) {
             setSending(false)
+
+            if (isBookingConflict(error)) {
+                setConflict(error.code)
+            }
         }
     }
 
@@ -238,11 +254,43 @@ export default function BookingReview() {
                     </ScrollView>
 
                     <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) + 8 }]}>
-                        <AppButton
-                            text={sending ? "Enviando..." : "Enviar Solicitação"}
-                            onPress={handleSubmit}
-                            disabled={!canSend || sending}
-                        />
+                        {conflict && (
+                            <View style={styles.conflictBanner}>
+                                <Icon name="alert" size={16} color={colors.red1} />
+
+                                <View style={styles.conflictText}>
+                                    <Text style={styles.conflictTitle}>
+                                        {CONFLICT[conflict].title}
+                                    </Text>
+                                    <Text style={styles.conflictHint}>
+                                        {CONFLICT[conflict].hint}
+                                    </Text>
+                                </View>
+                            </View>
+                        )}
+
+                        {conflict ? (
+                            <AppButton
+                                text={conflict === "patient-day"
+                                    ? "Ver minha Agenda"
+                                    : "Escolher outro horário"}
+                                variant="secondary"
+                                onPress={() => {
+                                    if (conflict === "patient-day") {
+                                        router.navigate("/schedule")
+                                        return
+                                    }
+
+                                    router.back()
+                                }}
+                            />
+                        ) : (
+                            <AppButton
+                                text={sending ? "Enviando..." : "Enviar Solicitação"}
+                                onPress={handleSubmit}
+                                disabled={!canSend || sending}
+                            />
+                        )}
                     </View>
                 </>
             )}
@@ -499,7 +547,37 @@ const styles = StyleSheet.create({
 
     footer: {
         backgroundColor: colors.white1,
+        gap: 10,
         paddingHorizontal: 28,
         paddingTop: 12,
+    },
+
+    conflictBanner: {
+        alignItems: "flex-start",
+        backgroundColor: colors.red2,
+        borderColor: colors.red1,
+        borderRadius: 10,
+        borderWidth: 1.5,
+        flexDirection: "row",
+        gap: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+    },
+
+    conflictText: {
+        flex: 1,
+        gap: 2,
+    },
+
+    conflictTitle: {
+        color: colors.dark1,
+        fontSize: 12,
+        fontWeight: "bold",
+    },
+
+    conflictHint: {
+        color: colors.gray2,
+        fontSize: 11.5,
+        lineHeight: 16,
     },
 })

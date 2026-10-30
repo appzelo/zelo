@@ -13,4 +13,5 @@ export const colors = {
     white1: "#FAF9F6",
     white2: "#FFFFFF",
     yellow1: "#F59E0B",
+    yellow2: "#F59E0B1F",
 }

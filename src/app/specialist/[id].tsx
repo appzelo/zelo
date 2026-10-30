@@ -1,13 +1,17 @@
-import { useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { View, Text, ScrollView, Pressable, ActivityIndicator, StyleSheet } from "react-native"
-import { router, useLocalSearchParams } from "expo-router"
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { colors } from "../../utils/constants/colors"
 import { formatCurrency, nextDays } from "../../utils/format"
-import { Specialist, getAvailability, getSpecialist } from "../../services/specialists"
+import { Specialist, getSpecialist } from "../../services/specialists"
+import { Booking, getPatientDayBooking } from "../../services/bookings"
+import { Slot, getDaySlots } from "../../services/availability"
+import { Patient, getPatient } from "../../services/patient"
 import BackHeader from "../../components/BackHeader"
 import AppButton from "../../components/AppButton"
 import Avatar from "../../components/Avatar"
+import Icon from "../../components/Icon"
 
 export default function SpecialistProfile() {
     const { id } = useLocalSearchParams<{ id: string }>()
@@ -15,7 +19,10 @@ export default function SpecialistProfile() {
     const days = useMemo(() => nextDays(5), [])
 
     const [specialist, setSpecialist] = useState<Specialist | null>(null)
-    const [slots, setSlots] = useState<string[]>([])
+    const [patient, setPatient] = useState<Patient | null>(null)
+    const [slots, setSlots] = useState<Slot[]>([])
+    const [dayBooking, setDayBooking] = useState<Booking | null>(null)
+    const [dayLoading, setDayLoading] = useState(true)
     const [loaded, setLoaded] = useState(false)
     const [selectedDay, setSelectedDay] = useState(days[0].key)
     const [selectedTime, setSelectedTime] = useState<string | null>(null)
@@ -23,14 +30,13 @@ export default function SpecialistProfile() {
     useEffect(() => {
         let active = true
 
-        Promise.all([getSpecialist(id), getAvailability(id)]).then(([found, availableSlots]) => {
+        Promise.all([getSpecialist(id), getPatient()]).then(([found, currentPatient]) => {
             if (!active) {
                 return
             }
 
             setSpecialist(found)
-            setSlots(availableSlots)
-            setSelectedTime(availableSlots[0] ?? null)
+            setPatient(currentPatient)
             setLoaded(true)
         })
 
@@ -39,8 +45,52 @@ export default function SpecialistProfile() {
         }
     }, [id])
 
+    // Relê ao trocar de dia e ao voltar da revisão: o horário escolhido pode
+    // ter sido ocupado enquanto a tela estava aberta.
+    const loadDay = useCallback(() => {
+        if (!patient) {
+            return
+        }
+
+        let active = true
+
+        setDayLoading(true)
+
+        Promise.all([
+            getDaySlots(id, selectedDay),
+            getPatientDayBooking(patient.id, selectedDay),
+        ]).then(([daySlots, found]) => {
+            if (!active) {
+                return
+            }
+
+            setSlots(daySlots)
+            setDayBooking(found)
+            // Mantém a escolha se ela continua livre; senão cai no primeiro horário.
+            setSelectedTime((current) => {
+                // Dia já tomado por outro atendimento do paciente: nada selecionável.
+                if (found) {
+                    return null
+                }
+
+                const stillFree = daySlots.some((slot) => slot.time === current && !slot.taken)
+
+                return stillFree ? current : (daySlots.find((slot) => !slot.taken)?.time ?? null)
+            })
+            setDayLoading(false)
+        })
+
+        return () => {
+            active = false
+        }
+    }, [id, patient, selectedDay])
+
+    useEffect(() => loadDay(), [loadDay])
+
+    useFocusEffect(loadDay)
+
     function handleNext() {
-        if (!specialist || !selectedTime) {
+        if (!specialist || !selectedTime || dayBooking) {
             return
         }
 
@@ -145,28 +195,80 @@ export default function SpecialistProfile() {
                                     )
                                 })}
                             </View>
+
+                            {dayBooking && (
+                                <View style={styles.dayBanner}>
+                                    <Icon name="alert" size={16} color={colors.yellow1} />
+
+                                    <View style={styles.dayBannerText}>
+                                        <Text style={styles.dayBannerTitle}>
+                                            Você já tem um atendimento neste dia
+                                        </Text>
+                                        <Text style={styles.dayBannerHint}>
+                                            Limite de 1 atendimento por paciente ao dia.
+                                        </Text>
+
+                                        <Pressable
+                                            onPress={() => router.push("/schedule")}
+                                            hitSlop={8}
+                                        >
+                                            <Text style={styles.dayBannerLink}>Ver na Agenda</Text>
+                                        </Pressable>
+                                    </View>
+                                </View>
+                            )}
                         </View>
 
                         <View style={styles.section}>
                             <Text style={styles.sectionTitle}>Horários Disponíveis</Text>
 
-                            <View style={styles.slotRow}>
-                                {slots.map((slot) => {
-                                    const active = slot === selectedTime
+                            {dayLoading && (
+                                <ActivityIndicator color={colors.blue1} />
+                            )}
 
-                                    return (
-                                        <Pressable
-                                            key={slot}
-                                            style={[styles.slot, active && styles.slotActive]}
-                                            onPress={() => setSelectedTime(slot)}
-                                        >
-                                            <Text style={[styles.slotText, active && styles.slotTextActive]}>
-                                                {slot}
-                                            </Text>
-                                        </Pressable>
-                                    )
-                                })}
-                            </View>
+                            {!dayLoading && slots.length === 0 && (
+                                <Text style={styles.slotsEmpty}>
+                                    Nenhum horário disponível neste dia.
+                                </Text>
+                            )}
+
+                            {!dayLoading && slots.length > 0 && (
+                                <View style={styles.slotRow}>
+                                    {slots.map((slot) => {
+                                        const active = !slot.taken && slot.time === selectedTime
+
+                                        return (
+                                            <Pressable
+                                                key={slot.time}
+                                                style={[
+                                                    styles.slot,
+                                                    active && styles.slotActive,
+                                                    slot.taken && styles.slotTaken,
+                                                ]}
+                                                onPress={() => setSelectedTime(slot.time)}
+                                                disabled={slot.taken || dayBooking !== null}
+                                                accessibilityState={{ disabled: slot.taken }}
+                                            >
+                                                <Text
+                                                    style={[
+                                                        styles.slotText,
+                                                        active && styles.slotTextActive,
+                                                        slot.taken && styles.slotTextTaken,
+                                                    ]}
+                                                >
+                                                    {slot.time}
+                                                </Text>
+                                            </Pressable>
+                                        )
+                                    })}
+                                </View>
+                            )}
+
+                            {!dayLoading && slots.length > 0 && slots.every((slot) => slot.taken) && (
+                                <Text style={styles.slotsEmpty}>
+                                    Todos os horários deste dia já estão ocupados.
+                                </Text>
+                            )}
                         </View>
                     </ScrollView>
 
@@ -174,6 +276,7 @@ export default function SpecialistProfile() {
                         <AppButton
                             text="Avançar para Revisão"
                             onPress={handleNext}
+                            disabled={!selectedTime || dayBooking !== null || dayLoading}
                         />
                     </View>
                 </>
@@ -410,6 +513,59 @@ const styles = StyleSheet.create({
 
     slotTextActive: {
         color: colors.green1,
+    },
+
+    slotTaken: {
+        backgroundColor: colors.white1,
+        borderColor: colors.gray3,
+    },
+
+    slotTextTaken: {
+        color: colors.gray1,
+        textDecorationLine: "line-through",
+    },
+
+    slotsEmpty: {
+        color: colors.gray2,
+        fontSize: 12.5,
+        lineHeight: 17,
+    },
+
+    dayBanner: {
+        alignItems: "flex-start",
+        backgroundColor: colors.yellow2,
+        borderColor: colors.yellow1,
+        borderRadius: 10,
+        borderWidth: 1.5,
+        flexDirection: "row",
+        gap: 8,
+        marginTop: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+    },
+
+    dayBannerText: {
+        flex: 1,
+        gap: 2,
+    },
+
+    dayBannerTitle: {
+        color: colors.dark1,
+        fontSize: 12,
+        fontWeight: "bold",
+    },
+
+    dayBannerHint: {
+        color: colors.gray2,
+        fontSize: 11.5,
+        lineHeight: 16,
+    },
+
+    dayBannerLink: {
+        color: colors.blue1,
+        fontSize: 12,
+        fontWeight: "bold",
+        marginTop: 4,
     },
 
     footer: {

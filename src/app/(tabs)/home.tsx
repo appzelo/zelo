@@ -3,7 +3,6 @@ import { router } from "expo-router"
 import { colors } from "../../utils/constants/colors"
 import LocationHeader from "../../components/LocationHeader"
 import ActionCard from "../../components/ActionCard"
-import { DEMO_BOOKING_ID } from "../../services/bookings"
 
 export default function Home() {
     return (
@@ -27,7 +26,7 @@ export default function Home() {
                     <ActionCard
                         title="Verificar Agendamentos"
                         icon="calendar"
-                        onPress={() => router.navigate(`/appointment/${DEMO_BOOKING_ID}`)}
+                        onPress={() => router.navigate("/schedule")}
                     />
                 </View>
             </View>
