@@ -103,7 +103,38 @@ export function formatShortDateKey(key: string) {
     return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}`
 }
 
-export function formatCurrency(value: number) {    const [integer, decimals] = value.toFixed(2).split(".")
+/**
+ * "1952-04-15" -> "15/04/1952"
+ */
+export function formatBirthDate(key: string) {
+    const date = parseDateKey(key)
+
+    if (!date) {
+        return key
+    }
+
+    return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`
+}
+
+export function calculateAge(birthKey: string, from: Date = new Date()) {
+    const birth = parseDateKey(birthKey)
+
+    if (!birth) {
+        return null
+    }
+
+    const beforeBirthday = from.getMonth() < birth.getMonth()
+        || (from.getMonth() === birth.getMonth() && from.getDate() < birth.getDate())
+
+    return from.getFullYear() - birth.getFullYear() - (beforeBirthday ? 1 : 0)
+}
+
+export function isTodayKey(key: string) {
+    return key === dateKey(new Date())
+}
+
+export function formatCurrency(value: number) {
+    const [integer, decimals] = value.toFixed(2).split(".")
     const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ".")
 
     return `R$ ${grouped},${decimals}`

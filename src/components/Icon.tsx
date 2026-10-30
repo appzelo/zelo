@@ -1,6 +1,6 @@
 import { View } from "react-native"
 
-export type IconName = "search" | "calendar" | "home" | "map-pin" | "filter" | "person" | "clock"
+export type IconName = "search" | "calendar" | "home" | "map-pin" | "filter" | "person" | "clock" | "navigation" | "alert"
 
 type IconProps = {
     name: IconName,
@@ -242,6 +242,66 @@ export default function Icon({
                     height: sw,
                     borderRadius: sw / 2,
                     backgroundColor: color,
+                }} />
+            </View>
+        )
+    }
+
+    if (name === "navigation") {
+        return (
+            <View style={{ width: s, height: s, transform: [{ rotate: "45deg" }] }}>
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.25,
+                    top: s * 0.13,
+                    width: 0,
+                    height: 0,
+                    borderLeftWidth: s * 0.25,
+                    borderRightWidth: s * 0.25,
+                    borderBottomWidth: s * 0.74,
+                    borderLeftColor: "transparent",
+                    borderRightColor: "transparent",
+                    borderBottomColor: color,
+                }} />
+            </View>
+        )
+    }
+
+    if (name === "alert") {
+        const bar = s * 0.15
+
+        return (
+            <View style={{ width: s, height: s }}>
+                <View style={{
+                    position: "absolute",
+                    left: 0,
+                    top: s * 0.08,
+                    width: 0,
+                    height: 0,
+                    borderLeftWidth: s * 0.5,
+                    borderRightWidth: s * 0.5,
+                    borderBottomWidth: s * 0.88,
+                    borderLeftColor: "transparent",
+                    borderRightColor: "transparent",
+                    borderBottomColor: color,
+                }} />
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.5 - bar / 2,
+                    top: s * 0.36,
+                    width: bar,
+                    height: s * 0.28,
+                    borderRadius: bar / 2,
+                    backgroundColor: "#FFFFFF",
+                }} />
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.5 - bar / 2,
+                    top: s * 0.71,
+                    width: bar,
+                    height: bar,
+                    borderRadius: bar / 2,
+                    backgroundColor: "#FFFFFF",
                 }} />
             </View>
         )

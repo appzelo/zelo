@@ -4,7 +4,8 @@ export type Patient = {
     name: string,
     /** Nome completo, usado na área do especialista. */
     fullName: string,
-    age: number,
+    /** Data de nascimento no formato "AAAA-MM-DD". */
+    birthDate: string,
     gender: string,
     address: string,
 }
@@ -14,7 +15,7 @@ const PATIENT: Patient = {
     id: "1",
     name: "Maria das Dores",
     fullName: "Maria das Dores Oliveira",
-    age: 74,
+    birthDate: "1952-04-15",
     gender: "Feminino",
     address: "Avenida Paulista, 1578 - Bela Vista",
 }
