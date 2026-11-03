@@ -88,12 +88,16 @@ export default function BookingSent() {
                     : "O profissional está revisando a rota e os detalhes médicos.",
             state: rejected ? "rejected" : "current",
         },
-        {
+    ]
+
+    // Recusado encerra a sequência: não há atendimento a acompanhar.
+    if (!rejected) {
+        steps.push({
             title: "Atendimento Domiciliar",
             description: "Acompanhe o trajeto em tempo real no app.",
             state: "pending",
-        },
-    ]
+        })
+    }
 
     return (
         <View style={styles.container}>
@@ -131,7 +135,7 @@ export default function BookingSent() {
                             <Text style={styles.subtitle}>
                                 {rejected
                                     ? "Este horário não foi confirmado. Você pode buscar outro profissional."
-                                    : `Aguardando confirmação do ${specialist.name}. Você será notificado em instantes.`}
+                                    : `Aguardando confirmação de ${specialist.name}. Você será notificado em instantes.`}
                             </Text>
                         </View>
 
@@ -147,25 +151,49 @@ export default function BookingSent() {
                         <View style={styles.stepsSection}>
                             <Text style={styles.sectionTitle}>Etapas da Solicitação</Text>
 
-                            <View style={styles.steps}>
-                                {steps.map((step) => (
-                                    <View key={step.title} style={styles.step}>
-                                        <StepIcon state={step.state} />
+                            <View>
+                                {steps.map((step, index) => {
+                                    const isLast = index === steps.length - 1
 
-                                        <View style={styles.stepText}>
-                                            <Text style={styles.stepTitle}>{step.title}</Text>
-                                            <Text style={styles.stepDescription}>{step.description}</Text>
+                                    return (
+                                        <View key={step.title} style={styles.step}>
+                                            <View style={styles.rail}>
+                                                <StepIcon state={step.state} />
+
+                                                {!isLast && step.state !== "rejected" && (
+                                                    <View
+                                                        style={[
+                                                            styles.railLine,
+                                                            step.state === "done" && styles.railLineDone,
+                                                        ]}
+                                                    />
+                                                )}
+                                            </View>
+
+                                            <View style={styles.stepText}>
+                                                <Text
+                                                    style={[
+                                                        styles.stepTitle,
+                                                        step.state === "pending" && styles.stepTitlePending,
+                                                    ]}
+                                                >
+                                                    {step.title}
+                                                </Text>
+                                                <Text style={styles.stepDescription}>
+                                                    {step.description}
+                                                </Text>
+                                            </View>
                                         </View>
-                                    </View>
-                                ))}
+                                    )
+                                })}
                             </View>
                         </View>
                     </ScrollView>
 
                     <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 12) + 8 }]}>
                         <AppButton
-                            text="Voltar para o Início"
-                            onPress={() => router.dismissTo("/home")}
+                            text={rejected ? "Buscar outro profissional" : "Voltar para o Início"}
+                            onPress={() => router.dismissTo(rejected ? "/search" : "/home")}
                         />
                     </View>
                 </>
@@ -318,24 +346,45 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
 
-    steps: {
-        gap: 16,
+    step: {
+        paddingLeft: 34,
+        position: "relative",
     },
 
-    step: {
-        flexDirection: "row",
-        gap: 12,
+    rail: {
+        alignItems: "center",
+        bottom: 0,
+        left: 0,
+        position: "absolute",
+        top: 0,
+        width: 22,
+    },
+
+    railLine: {
+        backgroundColor: colors.gray1,
+        flex: 1,
+        marginTop: 4,
+        width: 2,
+    },
+
+    railLineDone: {
+        backgroundColor: colors.green1,
     },
 
     stepText: {
         flex: 1,
         gap: 3,
+        paddingBottom: 18,
     },
 
     stepTitle: {
         color: colors.dark1,
         fontSize: 14,
         fontWeight: "bold",
+    },
+
+    stepTitlePending: {
+        color: colors.gray2,
     },
 
     stepDescription: {
@@ -349,7 +398,6 @@ const styles = StyleSheet.create({
         borderRadius: 11,
         height: 22,
         justifyContent: "center",
-        marginTop: 1,
         width: 22,
     },
 
