@@ -1,21 +1,32 @@
 import { useEffect, useState } from "react"
-import { View, Text, ScrollView, StyleSheet, TouchableWithoutFeedback, Keyboard } from "react-native"
+import { View, Text, ScrollView, Pressable, StyleSheet, TouchableWithoutFeedback, Keyboard } from "react-native"
 import { router } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { colors } from "../../utils/constants/colors"
 import SearchBar from "../../components/SearchBar"
 import SpecialistCard from "../../components/SpecialistCard"
-import { Specialist, searchSpecialists } from "../../services/specialists"
+import FilterModal from "../../components/FilterModal"
+import {
+    DEFAULT_FILTERS,
+    Specialist,
+    SpecialistFilters,
+    countActiveFilters,
+    searchSpecialists,
+} from "../../services/specialists"
 
 export default function Search() {
     const insets = useSafeAreaInsets()
     const [query, setQuery] = useState("")
     const [results, setResults] = useState<Specialist[] | null>(null)
+    const [filters, setFilters] = useState<SpecialistFilters>(DEFAULT_FILTERS)
+    const [filterOpen, setFilterOpen] = useState(false)
+
+    const activeFilters = countActiveFilters(filters)
 
     useEffect(() => {
         let active = true
 
-        searchSpecialists(query).then((found) => {
+        searchSpecialists(query, filters).then((found) => {
             if (active) {
                 setResults(found)
             }
@@ -24,7 +35,7 @@ export default function Search() {
         return () => {
             active = false
         }
-    }, [query])
+    }, [query, filters])
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -34,9 +45,32 @@ export default function Search() {
                         value={query}
                         onChangeText={setQuery}
                         placeholder="Nome ou especialidade"
+                        onFilterPress={() => {
+                            // Teclado aberto cobriria a folha de filtros no Android.
+                            Keyboard.dismiss()
+                            setFilterOpen(true)
+                        }}
+                        filterActive={activeFilters > 0}
                     />
 
-                    <Text style={styles.title}>Especialistas Próximos</Text>
+                    <View style={styles.header}>
+                        <Text style={styles.title}>Especialistas Próximos</Text>
+
+                        {activeFilters > 0 && (
+                            <Pressable
+                                style={styles.summary}
+                                onPress={() => setFilters(DEFAULT_FILTERS)}
+                                hitSlop={8}
+                            >
+                                <Text style={styles.summaryText}>
+                                    {activeFilters === 1
+                                        ? "1 filtro ativo"
+                                        : `${activeFilters} filtros ativos`}
+                                </Text>
+                                <Text style={styles.summaryClear}>Limpar</Text>
+                            </Pressable>
+                        )}
+                    </View>
 
                     <ScrollView
                         contentContainerStyle={styles.list}
@@ -52,10 +86,32 @@ export default function Search() {
                         ))}
 
                         {results?.length === 0 && (
-                            <Text style={styles.empty}>Nenhum especialista encontrado.</Text>
+                            <View style={styles.emptyBox}>
+                                <Text style={styles.empty}>
+                                    {activeFilters > 0
+                                        ? "Nenhum especialista atende a esses filtros."
+                                        : "Nenhum especialista encontrado."}
+                                </Text>
+
+                                {activeFilters > 0 && (
+                                    <Pressable
+                                        onPress={() => setFilters(DEFAULT_FILTERS)}
+                                        hitSlop={8}
+                                    >
+                                        <Text style={styles.emptyAction}>Limpar filtros</Text>
+                                    </Pressable>
+                                )}
+                            </View>
                         )}
                     </ScrollView>
                 </View>
+
+                <FilterModal
+                    visible={filterOpen}
+                    filters={filters}
+                    onApply={setFilters}
+                    onClose={() => setFilterOpen(false)}
+                />
             </View>
         </TouchableWithoutFeedback>
     )
@@ -73,13 +129,35 @@ const styles = StyleSheet.create({
         paddingHorizontal: 34,
     },
 
+    header: {
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 26,
+        marginTop: 44,
+    },
+
     title: {
         color: colors.blue1,
         fontSize: 18,
         fontWeight: "bold",
-        marginBottom: 26,
-        marginTop: 44,
         textAlign: "center",
+    },
+
+    summary: {
+        alignItems: "center",
+        flexDirection: "row",
+        gap: 8,
+    },
+
+    summaryText: {
+        color: colors.gray2,
+        fontSize: 12.5,
+    },
+
+    summaryClear: {
+        color: colors.blue1,
+        fontSize: 12.5,
+        fontWeight: "bold",
     },
 
     list: {
@@ -87,10 +165,21 @@ const styles = StyleSheet.create({
         paddingBottom: 24,
     },
 
+    emptyBox: {
+        alignItems: "center",
+        gap: 8,
+        marginTop: 12,
+    },
+
     empty: {
         color: colors.gray2,
         fontSize: 14,
-        marginTop: 12,
         textAlign: "center",
+    },
+
+    emptyAction: {
+        color: colors.blue1,
+        fontSize: 13,
+        fontWeight: "bold",
     },
 })

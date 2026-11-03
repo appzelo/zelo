@@ -1,6 +1,6 @@
 import { View } from "react-native"
 
-export type IconName = "search" | "calendar" | "home" | "map-pin" | "filter" | "person" | "clock" | "navigation" | "alert"
+export type IconName = "search" | "calendar" | "home" | "map-pin" | "filter" | "person" | "clock" | "navigation" | "alert" | "close"
 
 type IconProps = {
     name: IconName,
@@ -262,6 +262,35 @@ export default function Icon({
                     borderLeftColor: "transparent",
                     borderRightColor: "transparent",
                     borderBottomColor: color,
+                }} />
+            </View>
+        )
+    }
+
+    if (name === "close") {
+        const bar = s * 0.72
+
+        return (
+            <View style={{ width: s, height: s }}>
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.5 - sw / 2,
+                    top: (s - bar) / 2,
+                    width: sw,
+                    height: bar,
+                    borderRadius: sw / 2,
+                    backgroundColor: color,
+                    transform: [{ rotate: "45deg" }],
+                }} />
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.5 - sw / 2,
+                    top: (s - bar) / 2,
+                    width: sw,
+                    height: bar,
+                    borderRadius: sw / 2,
+                    backgroundColor: color,
+                    transform: [{ rotate: "-45deg" }],
                 }} />
             </View>
         )

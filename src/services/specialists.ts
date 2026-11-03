@@ -47,17 +47,47 @@ const SPECIALISTS: Specialist[] = [
 
 const AVAILABLE_SLOTS = ["09:00", "10:30", "14:00", "15:30"]
 
-export async function searchSpecialists(query: string): Promise<Specialist[]> {
+export type SpecialistFilters = {
+    /** Valor máximo por hora; `null` desliga o filtro. */
+    maxPrice: number | null,
+    /** Distância máxima em km; `null` desliga o filtro. */
+    maxDistanceKm: number | null,
+    availableToday: boolean,
+}
+
+export const DEFAULT_FILTERS: SpecialistFilters = {
+    maxPrice: null,
+    maxDistanceKm: null,
+    availableToday: false,
+}
+
+export function countActiveFilters(filters: SpecialistFilters): number {
+    return (filters.maxPrice !== null ? 1 : 0)
+        + (filters.maxDistanceKm !== null ? 1 : 0)
+        + (filters.availableToday ? 1 : 0)
+}
+
+export async function searchSpecialists(
+    query: string,
+    filters: SpecialistFilters = DEFAULT_FILTERS,
+): Promise<Specialist[]> {
     const term = query.trim().toLowerCase()
 
-    if (!term) {
-        return SPECIALISTS
-    }
+    return SPECIALISTS.filter((specialist) => {
+        const matchesTerm = !term
+            || specialist.name.toLowerCase().includes(term)
+            || specialist.specialty.toLowerCase().includes(term)
 
-    return SPECIALISTS.filter((specialist) =>
-        specialist.name.toLowerCase().includes(term)
-        || specialist.specialty.toLowerCase().includes(term)
-    )
+        const matchesPrice = filters.maxPrice === null
+            || specialist.pricePerHour <= filters.maxPrice
+
+        const matchesDistance = filters.maxDistanceKm === null
+            || specialist.distanceKm <= filters.maxDistanceKm
+
+        const matchesToday = !filters.availableToday || specialist.availableToday
+
+        return matchesTerm && matchesPrice && matchesDistance && matchesToday
+    })
 }
 
 export async function getSpecialist(id: string): Promise<Specialist | null> {

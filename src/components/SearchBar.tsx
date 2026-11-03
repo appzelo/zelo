@@ -7,6 +7,8 @@ type SearchBarProps = {
     onChangeText: (text: string) => void,
     onFilterPress?: () => void,
     placeholder?: string,
+    /** Indica que há filtros aplicados na busca. */
+    filterActive?: boolean,
 }
 
 export default function SearchBar({
@@ -14,6 +16,7 @@ export default function SearchBar({
     onChangeText,
     onFilterPress,
     placeholder,
+    filterActive = false,
 }: SearchBarProps) {
     return (
         <View style={styles.container}>
@@ -30,8 +33,20 @@ export default function SearchBar({
                 returnKeyType="search"
             />
 
-            <Pressable onPress={onFilterPress} hitSlop={10} style={styles.filter}>
-                <Icon name="filter" size={22} color={colors.dark1} />
+            <Pressable
+                onPress={onFilterPress}
+                hitSlop={10}
+                style={styles.filter}
+                accessibilityRole="button"
+                accessibilityLabel="Filtros"
+            >
+                <Icon
+                    name="filter"
+                    size={22}
+                    color={filterActive ? colors.blue1 : colors.dark1}
+                />
+
+                {filterActive && <View style={styles.filterDot} />}
             </Pressable>
         </View>
     )
@@ -61,5 +76,17 @@ const styles = StyleSheet.create({
     filter: {
         alignItems: "center",
         justifyContent: "center",
+    },
+
+    filterDot: {
+        backgroundColor: colors.green1,
+        borderColor: colors.white2,
+        borderRadius: 5,
+        borderWidth: 1.5,
+        height: 10,
+        position: "absolute",
+        right: -3,
+        top: -3,
+        width: 10,
     },
 })
