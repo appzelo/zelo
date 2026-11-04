@@ -1,6 +1,6 @@
-import { View } from "react-native"
+import { Text, View } from "react-native"
 
-export type IconName = "search" | "calendar" | "home" | "map-pin" | "filter" | "person" | "clock" | "navigation" | "alert" | "close"
+export type IconName = "search" | "calendar" | "home" | "map-pin" | "filter" | "person" | "user" | "clock" | "navigation" | "alert" | "close" | "edit" | "settings" | "chevron-right" | "lock" | "help"
 
 type IconProps = {
     name: IconName,
@@ -209,6 +209,38 @@ export default function Icon({
         )
     }
 
+    if (name === "user") {
+        const head = s * 0.32
+
+        return (
+            <View style={{ width: s, height: s }}>
+                <View style={{
+                    position: "absolute",
+                    left: (s - head) / 2,
+                    top: s * 0.12,
+                    width: head,
+                    height: head,
+                    borderRadius: head / 2,
+                    borderWidth: sw,
+                    borderColor: color,
+                }} />
+
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.12,
+                    top: s * 0.52,
+                    width: s * 0.76,
+                    height: s * 0.34,
+                    borderTopLeftRadius: s * 0.38,
+                    borderTopRightRadius: s * 0.38,
+                    borderWidth: sw,
+                    borderBottomWidth: 0,
+                    borderColor: color,
+                }} />
+            </View>
+        )
+    }
+
     if (name === "clock") {
         const ring = s * 0.86
         const offset = (s - ring) / 2
@@ -292,6 +324,190 @@ export default function Icon({
                     backgroundColor: color,
                     transform: [{ rotate: "-45deg" }],
                 }} />
+            </View>
+        )
+    }
+
+    if (name === "settings") {
+        const teeth = 8
+        const radius = s * 0.35
+        const toothWidth = s * 0.18
+        const toothHeight = s * 0.16
+        const ring = s * 0.62
+        const inner = s * 0.28
+
+        return (
+            <View style={{ width: s, height: s }}>
+                {Array.from({ length: teeth }, (_, index) => {
+                    const angle = (360 / teeth) * index
+                    const radians = (angle * Math.PI) / 180
+
+                    return (
+                        <View
+                            key={angle}
+                            style={{
+                                position: "absolute",
+                                left: s / 2 + radius * Math.cos(radians) - toothWidth / 2,
+                                top: s / 2 + radius * Math.sin(radians) - toothHeight / 2,
+                                width: toothWidth,
+                                height: toothHeight,
+                                borderRadius: toothWidth * 0.3,
+                                backgroundColor: color,
+                                transform: [{ rotate: `${angle}deg` }],
+                            }}
+                        />
+                    )
+                })}
+
+                <View style={{
+                    position: "absolute",
+                    left: (s - ring) / 2,
+                    top: (s - ring) / 2,
+                    width: ring,
+                    height: ring,
+                    borderRadius: ring / 2,
+                    borderWidth: sw,
+                    borderColor: color,
+                }} />
+
+                <View style={{
+                    position: "absolute",
+                    left: (s - inner) / 2,
+                    top: (s - inner) / 2,
+                    width: inner,
+                    height: inner,
+                    borderRadius: inner / 2,
+                    borderWidth: sw,
+                    borderColor: color,
+                }} />
+            </View>
+        )
+    }
+
+    if (name === "edit") {
+        const body = s * 0.62
+        const thickness = s * 0.18
+        const tip = s * 0.14
+        const top = s * 0.12
+
+        return (
+            <View style={{ width: s, height: s, transform: [{ rotate: "-45deg" }] }}>
+                <View style={{
+                    position: "absolute",
+                    left: (s - thickness) / 2,
+                    top,
+                    width: thickness,
+                    height: body,
+                    borderRadius: thickness * 0.2,
+                    borderWidth: sw,
+                    borderColor: color,
+                }} />
+
+                <View style={{
+                    position: "absolute",
+                    left: (s - thickness) / 2,
+                    top: top + body,
+                    width: 0,
+                    height: 0,
+                    borderLeftWidth: thickness / 2,
+                    borderRightWidth: thickness / 2,
+                    borderTopWidth: tip,
+                    borderLeftColor: "transparent",
+                    borderRightColor: "transparent",
+                    borderTopColor: color,
+                }} />
+            </View>
+        )
+    }
+
+    if (name === "chevron-right") {
+        const chevron = s * 0.34
+
+        return (
+            <View style={{ width: s, height: s, alignItems: "center", justifyContent: "center" }}>
+                <View style={{
+                    width: chevron,
+                    height: chevron,
+                    borderTopWidth: sw,
+                    borderRightWidth: sw,
+                    borderColor: color,
+                    transform: [{ rotate: "45deg" }],
+                }} />
+            </View>
+        )
+    }
+
+    if (name === "lock") {
+        const bodyWidth = s * 0.62
+        const bodyHeight = s * 0.46
+        const shackleWidth = s * 0.36
+        const shackleHeight = s * 0.30
+
+        return (
+            <View style={{ width: s, height: s }}>
+                <View style={{
+                    position: "absolute",
+                    left: (s - shackleWidth) / 2,
+                    top: s * 0.14,
+                    width: shackleWidth,
+                    height: shackleHeight,
+                    borderTopLeftRadius: shackleWidth / 2,
+                    borderTopRightRadius: shackleWidth / 2,
+                    borderWidth: sw,
+                    borderBottomWidth: 0,
+                    borderColor: color,
+                }} />
+
+                <View style={{
+                    position: "absolute",
+                    left: (s - bodyWidth) / 2,
+                    top: s * 0.40,
+                    width: bodyWidth,
+                    height: bodyHeight,
+                    borderRadius: s * 0.10,
+                    borderWidth: sw,
+                    borderColor: color,
+                }} />
+
+                <View style={{
+                    position: "absolute",
+                    left: s * 0.5 - sw / 2,
+                    top: s * 0.56,
+                    width: sw,
+                    height: s * 0.12,
+                    borderRadius: sw / 2,
+                    backgroundColor: color,
+                }} />
+            </View>
+        )
+    }
+
+    if (name === "help") {
+        const ring = s * 0.84
+
+        return (
+            <View style={{ width: s, height: s, alignItems: "center", justifyContent: "center" }}>
+                <View style={{
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: ring,
+                    height: ring,
+                    borderRadius: ring / 2,
+                    borderWidth: sw,
+                    borderColor: color,
+                }}>
+                    <Text
+                        accessible={false}
+                        style={{
+                            color,
+                            fontSize: s * 0.52,
+                            fontWeight: "bold",
+                            includeFontPadding: false,
+                            lineHeight: s * 0.58,
+                            textAlign: "center",
+                        }}
+                    >?</Text>
+                </View>
             </View>
         )
     }

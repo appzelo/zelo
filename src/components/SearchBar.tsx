@@ -33,21 +33,23 @@ export default function SearchBar({
                 returnKeyType="search"
             />
 
-            <Pressable
-                onPress={onFilterPress}
-                hitSlop={10}
-                style={styles.filter}
-                accessibilityRole="button"
-                accessibilityLabel="Filtros"
-            >
-                <Icon
-                    name="filter"
-                    size={22}
-                    color={filterActive ? colors.blue1 : colors.dark1}
-                />
+            {onFilterPress && (
+                <Pressable
+                    onPress={onFilterPress}
+                    hitSlop={10}
+                    style={styles.filter}
+                    accessibilityRole="button"
+                    accessibilityLabel="Filtros"
+                >
+                    <Icon
+                        name="filter"
+                        size={22}
+                        color={filterActive ? colors.blue1 : colors.dark1}
+                    />
 
-                {filterActive && <View style={styles.filterDot} />}
-            </Pressable>
+                    {filterActive && <View style={styles.filterDot} />}
+                </Pressable>
+            )}
         </View>
     )
 }

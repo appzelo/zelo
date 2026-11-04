@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { colors } from "../utils/constants/colors"
 import Icon, { IconName } from "./Icon"
 
-export type TabName = "home" | "search" | "schedule"
+export type TabName = "home" | "search" | "schedule" | "settings"
 
 type BottomNavProps = {
     activeTab: TabName,
@@ -14,6 +14,7 @@ const tabs: { name: TabName, label: string, icon: IconName }[] = [
     { name: "home", label: "Início", icon: "home" },
     { name: "search", label: "Buscar", icon: "search" },
     { name: "schedule", label: "Agenda", icon: "calendar" },
+    { name: "settings", label: "Ajustes", icon: "settings" },
 ]
 
 export default function BottomNav({

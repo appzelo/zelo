@@ -5,7 +5,7 @@ import Icon, { IconName } from "./Icon"
 type AppButtonProps = {
 	text: string,
 	onPress?: () => void,
-	variant?: "primary" | "secondary",
+	variant?: "primary" | "secondary" | "danger",
 	icon?: IconName,
 	disabled?: boolean,
 }
@@ -25,6 +25,7 @@ export default function AppButton({
 				styles.button, 
 				primary && styles.primaryButton,
 				variant === "secondary" && styles.secondaryButton,
+				variant === "danger" && styles.dangerButton,
 				disabled && styles.disabled,
 			]} 
 			onPress={onPress}
@@ -35,7 +36,7 @@ export default function AppButton({
 					<Icon
 						name={icon}
 						size={18}
-						color={primary ? colors.white2 : colors.blue1}
+						color={primary ? colors.white2 : variant === "danger" ? colors.red1 : colors.blue1}
 					/>
 				)}
 				<Text 
@@ -43,6 +44,7 @@ export default function AppButton({
 						styles.buttonText, 
 						primary && styles.primaryText,
 						variant === "secondary" && styles.secondaryText,
+						variant === "danger" && styles.dangerText,
 					]}
 				>
 					{text}
@@ -89,6 +91,16 @@ const styles = StyleSheet.create({
 
 	secondaryText: {
         color: colors.blue1,
+	},
+
+	dangerButton: {
+        backgroundColor: colors.white2,
+        borderColor: colors.red1,
+        borderWidth: 2,
+	},
+
+	dangerText: {
+        color: colors.red1,
 	},
 
 	disabled: {
