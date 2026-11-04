@@ -18,6 +18,8 @@ export type IconName =
     | "chevron-right"
     | "lock"
     | "help"
+    | "people"
+    | "medkit"
 
 type IoniconName = ComponentProps<typeof Ionicons>["name"]
 
@@ -42,6 +44,8 @@ const ICONS: Record<IconName, IoniconName> = {
     "chevron-right": "chevron-forward",
     lock: "lock-closed-outline",
     help: "help-circle-outline",
+    people: "people-outline",
+    medkit: "medkit-outline",
 }
 
 type IconProps = {
