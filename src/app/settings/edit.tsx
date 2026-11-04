@@ -118,9 +118,7 @@ export default function EditProfile() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <BackHeader text="Editar perfil" />
-            </View>
+            <BackHeader text="Editar perfil" />
 
             {!loaded && (
                 <View style={styles.centered}>
@@ -270,11 +268,8 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.white1,
         flex: 1,
+        paddingHorizontal: "5%",
         width: "100%",
-    },
-
-    header: {
-        paddingHorizontal: 34,
     },
 
     flex: {
@@ -290,7 +285,6 @@ const styles = StyleSheet.create({
 
     scrollContent: {
         gap: 20,
-        paddingHorizontal: 34,
         paddingTop: 8,
     },
 

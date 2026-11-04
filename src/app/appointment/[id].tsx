@@ -67,9 +67,7 @@ export default function AppointmentDetail() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <BackHeader text="Consulta Confirmada" />
-            </View>
+            <BackHeader text="Consulta Confirmada" />
 
             {!loaded && (
                 <View style={styles.centered}>
@@ -165,23 +163,18 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.white1,
         flex: 1,
+        paddingHorizontal: "5%",
         width: "100%",
-    },
-
-    header: {
-        paddingHorizontal: 28,
     },
 
     scroll: {
         gap: 14,
-        paddingHorizontal: 28,
     },
 
     centered: {
         alignItems: "center",
         flex: 1,
         justifyContent: "center",
-        paddingHorizontal: 28,
     },
 
     empty: {

@@ -106,9 +106,7 @@ export default function SpecialistProfile() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <BackHeader text="Perfil do Profissional" />
-            </View>
+            <BackHeader text="Perfil do Profissional" />
 
             {!loaded && (
                 <View style={styles.centered}>
@@ -306,17 +304,13 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.white1,
         flex: 1,
+        paddingHorizontal: "5%",
         width: "100%",
-    },
-
-    header: {
-        paddingHorizontal: 28,
     },
 
     scroll: {
         gap: 18,
         paddingBottom: 24,
-        paddingHorizontal: 28,
     },
 
     centered: {
@@ -570,7 +564,6 @@ const styles = StyleSheet.create({
 
     footer: {
         backgroundColor: colors.white1,
-        paddingHorizontal: 28,
         paddingTop: 12,
     },
 })

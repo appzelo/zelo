@@ -229,12 +229,12 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.white1,
         flex: 1,
+        paddingHorizontal: "5%",
         width: "100%",
     },
 
     content: {
         flex: 1,
-        paddingHorizontal: 34,
     },
 
     header: {

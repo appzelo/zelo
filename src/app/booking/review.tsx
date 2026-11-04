@@ -135,9 +135,7 @@ export default function BookingReview() {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <BackHeader text="Revisão do Agendamento" />
-            </View>
+            <BackHeader text="Revisão do Agendamento" />
 
             {!loaded && (
                 <View style={styles.centered}>
@@ -335,24 +333,19 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.white1,
         flex: 1,
+        paddingHorizontal: "5%",
         width: "100%",
-    },
-
-    header: {
-        paddingHorizontal: 28,
     },
 
     scroll: {
         gap: 18,
         paddingBottom: 24,
-        paddingHorizontal: 28,
     },
 
     centered: {
         alignItems: "center",
         flex: 1,
         justifyContent: "center",
-        paddingHorizontal: 28,
     },
 
     empty: {
@@ -548,7 +541,6 @@ const styles = StyleSheet.create({
     footer: {
         backgroundColor: colors.white1,
         gap: 10,
-        paddingHorizontal: 28,
         paddingTop: 12,
     },
 

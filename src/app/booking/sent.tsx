@@ -248,6 +248,7 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.white1,
         flex: 1,
+        paddingHorizontal: "5%",
         width: "100%",
     },
 
@@ -255,14 +256,12 @@ const styles = StyleSheet.create({
         alignItems: "center",
         gap: 22,
         paddingBottom: 24,
-        paddingHorizontal: 28,
     },
 
     centered: {
         alignItems: "center",
         flex: 1,
         justifyContent: "center",
-        paddingHorizontal: 28,
     },
 
     empty: {
@@ -433,7 +432,6 @@ const styles = StyleSheet.create({
 
     footer: {
         backgroundColor: colors.white1,
-        paddingHorizontal: 28,
         paddingTop: 12,
     },
 })
