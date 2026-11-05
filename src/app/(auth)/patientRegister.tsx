@@ -1,4 +1,3 @@
-import "dotenv/config"
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from "react-native"
 import BackHeader from "../../components/BackHeader"
 import SectionText from "../../components/SectionText"
@@ -9,44 +8,44 @@ import { useForm, FormProvider } from "react-hook-form"
 
 export default function patientRegister() {
     type PatientRegisterForm = {
-        fullName: string,
-        password: string,
+        nome: string,
+        senha: string,
         cpf: string,
-        birthDate: Date,
+        dataNascimento: string,
         email: string,
-        phone: string,
-        address: {
-            zipCode: string,
-            street: string,
-            streetNumber: string,
-            neighborhood: string,
-            city: string,
-            state: string,
+        celular: string,
+        endereco: {
+            cep: string,
+            rua: string,
+            numero: string,
+            bairro: string,
+            cidade: string,
+            uf: string,
         }
     }
 
     const form = useForm<PatientRegisterForm>({
         defaultValues: {
-            fullName: "",
-            password: "",
+            nome: "a",
+            senha: "a",
             cpf: "",
-            birthDate: "",
+            dataNascimento: "",
             email: "",
-            phone: "",
-            address: {                
-                zipCode: "",
-                street: "",
-                streetNumber: "",
-                neighborhood: "",
-                city: "",
-                state: "",
+            celular: "",
+            endereco: {                
+                cep: "1",
+                rua: "a",
+                numero: "1",
+                bairro: "a",
+                cidade: "a",
+                uf: "a",
             }
         }
     })
 
-    const onSubmit = (data: PatientRegisterForm) => {
-        // console.log(data)
-        fetch(`${process.env.EXPO_PUBLIC_USER_API}/commonUsers`, {
+    const onSubmit = async (data: PatientRegisterForm) => {
+        console.log(data)
+        await fetch(`${process.env.EXPO_PUBLIC_COMMON_USER_API}`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -54,8 +53,9 @@ export default function patientRegister() {
             },
             body: JSON.stringify(data),
         })
-        .then(response => response.json())
-        .then(json => console.log(json))
+        .then(async response => {
+            console.log(await response.text())
+        })
     }
 
     return(
@@ -81,7 +81,7 @@ export default function patientRegister() {
 
                     <FormProvider {...form}>
                         <AppInput 
-                            name="fullName"
+                            name="nome"
                             showLabel
                             label="Nome Completo" 
                             placeholder="Seu nome completo"
@@ -98,7 +98,7 @@ export default function patientRegister() {
                                 required
                             ></AppInput>
                             <AppInput 
-                                name="birthDate"
+                                name="dataNascimento"
                                 showLabel
                                 label="Nascimento" 
                                 placeholder="DD/MM/AAAA" 
@@ -108,7 +108,7 @@ export default function patientRegister() {
                             ></AppInput>
                         </View>
                         <AppInput 
-                            name="password"
+                            name="senha"
                             showLabel
                             label="Senha" 
                             placeholder="Digite sua senha" 
@@ -126,7 +126,7 @@ export default function patientRegister() {
                             required
                         ></AppInput>
                         <AppInput 
-                            name="phone"
+                            name="celular"
                             showLabel
                             label="Celular" 
                             placeholder="(XX) XXXXX-XXXX" 
@@ -141,7 +141,7 @@ export default function patientRegister() {
                             titleStyle={{fontSize: 18}}
                         ></SectionText>
                         <AppInput
-                            name="address.zipCode"
+                            name="endereco.cep"
                             showLabel
                             label="CEP" 
                             placeholder="00000-000"
@@ -150,14 +150,14 @@ export default function patientRegister() {
                         ></AppInput>
                         <View style={styles.row}>
                             <AppInput
-                                name="address.street"
+                                name="endereco.rua"
                                 showLabel
                                 label="Rua/Avenida" 
                                 containerStyle={{flex: 2}}
                                 required
                             ></AppInput>
                             <AppInput
-                                name="address.streetNumber"
+                                name="endereco.numero"
                                 showLabel
                                 label="Nº" 
                                 containerStyle={{flex: 1}}
@@ -166,21 +166,21 @@ export default function patientRegister() {
                             ></AppInput>
                         </View>
                         <AppInput
-                            name="address.neighborhood"
+                            name="endereco.bairro"
                             showLabel
                             label="Bairro" 
                             required
                         ></AppInput>
                         <View style={styles.row}>
                             <AppInput
-                                name="address.city"
+                                name="endereco.cidade"
                                 showLabel
                                 label="Cidade" 
                                 containerStyle={{flex: 3}}
                                 required
                             ></AppInput>
                             <AppInput
-                                name="address.state"
+                                name="endereco.uf"
                                 showLabel
                                 label="UF" 
                                 containerStyle={{flex: 1}}
