@@ -6,15 +6,17 @@ type StatusChipProps = {
     status: BookingStatus,
     /** Usa o texto completo em vez do rótulo curto. */
     full?: boolean,
+    /** Sobrescreve o texto (ex.: "Confirmada" na lista de solicitações). */
+    label?: string,
 }
 
-export default function StatusChip({ status, full = false }: StatusChipProps) {
+export default function StatusChip({ status, full = false, label }: StatusChipProps) {
     const meta = BOOKING_STATUS[status]
 
     return (
         <View style={[styles.chip, { backgroundColor: meta.background }]}>
             <Text style={[styles.text, { color: meta.color }]} numberOfLines={1}>
-                {full ? meta.label : meta.shortLabel}
+                {label ?? (full ? meta.label : meta.shortLabel)}
             </Text>
         </View>
     )
