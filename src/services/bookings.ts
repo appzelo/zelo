@@ -1,7 +1,14 @@
 import { Specialist, getSpecialist } from "./specialists"
 import { dateKey } from "../utils/format"
 
-export type BookingStatus = "pending" | "accepted" | "rejected"
+export type BookingStatus =
+    | "pending"
+    | "accepted"
+    | "in_progress"
+    | "completed"
+    | "rejected"
+
+export type PaymentStatus = "pending" | "paid"
 
 export type Booking = {
     id: string,
@@ -16,6 +23,12 @@ export type Booking = {
     travelFee: number,
     total: number,
     status: BookingStatus,
+    /** Duração combinada do atendimento, em minutos. */
+    durationMinutes: number,
+    /** Distância até o paciente, em km. */
+    distanceKm: number,
+    /** Pagamento combinado direto com o profissional. */
+    paymentStatus?: PaymentStatus,
 }
 
 export type CreateBookingInput = {
@@ -58,6 +71,9 @@ const BOOKINGS: Booking[] = [
         travelFee: 12,
         total: 162,
         status: "accepted",
+        durationMinutes: 60,
+        distanceKm: 2.4,
+        paymentStatus: "pending",
     },
     {
         id: "booking-demo-pending",
@@ -71,6 +87,69 @@ const BOOKINGS: Booking[] = [
         travelFee: 9,
         total: 159,
         status: "pending",
+        durationMinutes: 60,
+        distanceKm: 1.8,
+        paymentStatus: "pending",
+    },
+    {
+        id: "booking-pro-antonio",
+        specialistId: "1",
+        patientId: "2",
+        date: daysFromNow(0),
+        time: "14:00",
+        needs: "Fisioterapia motora para recuperação de cirurgia no quadril.",
+        price: 150,
+        travelFee: 16,
+        total: 166,
+        status: "accepted",
+        durationMinutes: 60,
+        distanceKm: 3.1,
+        paymentStatus: "pending",
+    },
+    {
+        id: "request-pro-helena",
+        specialistId: "1",
+        patientId: "3",
+        date: daysFromNow(1),
+        time: "09:00",
+        needs: "Reabilitação de joelho e treino de equilíbrio.",
+        price: 150,
+        travelFee: 21,
+        total: 171,
+        status: "pending",
+        durationMinutes: 60,
+        distanceKm: 4.2,
+        paymentStatus: "pending",
+    },
+    {
+        id: "request-pro-jose",
+        specialistId: "1",
+        patientId: "4",
+        date: daysFromNow(1),
+        time: "14:00",
+        needs: "Acompanhamento de pressão arterial e caminhada assistida.",
+        price: 150,
+        travelFee: 19,
+        total: 169,
+        status: "pending",
+        durationMinutes: 60,
+        distanceKm: 3.8,
+        paymentStatus: "pending",
+    },
+    {
+        id: "booking-pro-lucia",
+        specialistId: "1",
+        patientId: "5",
+        date: daysFromNow(-1),
+        time: "16:00",
+        needs: "Avaliação inicial de mobilidade.",
+        price: 150,
+        travelFee: 25,
+        total: 175,
+        status: "rejected",
+        durationMinutes: 60,
+        distanceKm: 5,
+        paymentStatus: "pending",
     },
 ]
 
@@ -105,14 +184,16 @@ export class BookingConflictError extends Error {
     }
 }
 
-/** Situações que ainda ocupam a agenda. Recusado libera o horário. */
-const ACTIVE_STATUSES: BookingStatus[] = ["pending", "accepted"]
+/** Situações que ainda ocupam a agenda. Recusado e concluído liberam o horário. */
+const ACTIVE_STATUSES: BookingStatus[] = ["pending", "accepted", "in_progress"]
 
 type ConflictInput = {
     patientId: string,
     specialistId: string,
     date: string,
     time: string,
+    /** Ignora o próprio agendamento ao revalidar uma solicitação. */
+    ignoreBookingId?: string,
 }
 
 /**
@@ -121,7 +202,11 @@ type ConflictInput = {
  * mostrar a regra mais ampla quando as duas falham.
  */
 export function findConflict(input: ConflictInput): BookingConflict | null {
-    const active = BOOKINGS.filter((booking) => ACTIVE_STATUSES.includes(booking.status))
+    const active = BOOKINGS.filter(
+        (booking) =>
+            ACTIVE_STATUSES.includes(booking.status)
+            && booking.id !== input.ignoreBookingId,
+    )
 
     const sameDay = active.some(
         (booking) => booking.patientId === input.patientId && booking.date === input.date,
@@ -196,6 +281,9 @@ export async function createBooking(input: CreateBookingInput): Promise<Booking>
         ...input,
         ...calculateTotals(specialist),
         status: "pending",
+        durationMinutes: 60,
+        distanceKm: specialist.distanceKm,
+        paymentStatus: "pending",
     }
 
     BOOKINGS.push(booking)
@@ -220,6 +308,14 @@ export async function getBooking(id: string): Promise<Booking | null> {
 export async function listBookings(patientId?: string): Promise<Booking[]> {
     return BOOKINGS
         .filter((booking) => patientId === undefined || booking.patientId === patientId)
+        .map((booking) => ({ ...booking }))
+        .sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`))
+}
+
+/** Agenda do profissional, ordenada por data e horário. */
+export async function listSpecialistBookings(specialistId: string): Promise<Booking[]> {
+    return BOOKINGS
+        .filter((booking) => booking.specialistId === specialistId)
         .map((booking) => ({ ...booking }))
         .sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`))
 }
@@ -283,4 +379,40 @@ export async function updateBookingStatus(
     notify(booking)
 
     return { ...booking }
+}
+
+/**
+ * Aceite da solicitação. Revalida os conflitos porque outro paciente pode
+ * ter ocupado o horário enquanto o profissional decidia.
+ */
+export async function acceptBooking(id: string): Promise<Booking> {
+    const booking = BOOKINGS.find((item) => item.id === id)
+
+    if (!booking) {
+        throw new Error("Solicitação não encontrada")
+    }
+
+    const conflict = findConflict({
+        patientId: booking.patientId,
+        specialistId: booking.specialistId,
+        date: booking.date,
+        time: booking.time,
+        ignoreBookingId: booking.id,
+    })
+
+    if (conflict) {
+        throw new BookingConflictError(conflict)
+    }
+
+    return (await updateBookingStatus(id, "accepted"))!
+}
+
+export async function rejectBooking(id: string): Promise<Booking> {
+    const booking = BOOKINGS.find((item) => item.id === id)
+
+    if (!booking) {
+        throw new Error("Solicitação não encontrada")
+    }
+
+    return (await updateBookingStatus(id, "rejected"))!
 }

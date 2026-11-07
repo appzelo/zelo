@@ -13,12 +13,12 @@ import { colors } from "../../utils/constants/colors"
 import { dateKey, formatCurrency, formatDateKey } from "../../utils/format"
 import {
     Booking,
-    BookingStatus,
     listBookings,
     subscribeBookings,
 } from "../../services/bookings"
 import { Specialist, getSpecialist } from "../../services/specialists"
 import { getPatient } from "../../services/patient"
+import { BOOKING_STATUS } from "../../utils/constants/bookingStatus"
 import AppButton from "../../components/AppButton"
 import Avatar from "../../components/Avatar"
 import Icon from "../../components/Icon"
@@ -26,24 +26,6 @@ import Icon from "../../components/Icon"
 type ScheduleItem = {
     booking: Booking,
     specialist: Specialist,
-}
-
-const STATUS: Record<BookingStatus, { label: string, color: string, background: string }> = {
-    pending: {
-        label: "Aguardando confirmação",
-        color: colors.yellow1,
-        background: colors.yellow2,
-    },
-    accepted: {
-        label: "Confirmado",
-        color: colors.green1,
-        background: colors.green2,
-    },
-    rejected: {
-        label: "Recusado",
-        color: colors.red1,
-        background: colors.red2,
-    },
 }
 
 export default function Schedule() {
@@ -175,7 +157,7 @@ type ScheduleCardProps = {
 }
 
 function ScheduleCard({ booking, specialist }: ScheduleCardProps) {
-    const status = STATUS[booking.status]
+    const status = BOOKING_STATUS[booking.status]
 
     function handlePress() {
         // Confirmado abre a Consulta Confirmada; os outros estados reaproveitam

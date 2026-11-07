@@ -3,25 +3,36 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { colors } from "../utils/constants/colors"
 import Icon, { IconName } from "./Icon"
 
-export type TabName = "home" | "search" | "schedule" | "settings"
+export type TabName = "home" | "search" | "schedule" | "settings" | "agenda" | "requests"
+
+export type BottomNavVariant = "patient" | "specialist"
 
 type BottomNavProps = {
     activeTab: TabName,
     onTabPress?: (tab: TabName) => void,
+    variant?: BottomNavVariant,
 }
 
-const tabs: { name: TabName, label: string, icon: IconName }[] = [
+const patientTabs: { name: TabName, label: string, icon: IconName }[] = [
     { name: "home", label: "Início", icon: "home" },
     { name: "search", label: "Buscar", icon: "search" },
     { name: "schedule", label: "Agenda", icon: "calendar" },
     { name: "settings", label: "Ajustes", icon: "settings" },
 ]
 
+const specialistTabs: { name: TabName, label: string, icon: IconName }[] = [
+    { name: "home", label: "Início", icon: "home" },
+    { name: "agenda", label: "Agenda", icon: "calendar" },
+    { name: "requests", label: "Pedidos", icon: "clipboard" },
+]
+
 export default function BottomNav({
     activeTab,
     onTabPress,
+    variant = "patient",
 }: BottomNavProps) {
     const insets = useSafeAreaInsets()
+    const tabs = variant === "specialist" ? specialistTabs : patientTabs
 
     return (
         <View style={[styles.nav, { paddingBottom: Math.max(insets.bottom, 12) + 8 }]}>
@@ -54,6 +65,8 @@ const styles = StyleSheet.create({
     nav: {
         alignItems: "center",
         backgroundColor: colors.white1,
+        borderTopColor: colors.gray3,
+        borderTopWidth: 1,
         flexDirection: "row",
         paddingHorizontal: 22,
         paddingTop: 10,

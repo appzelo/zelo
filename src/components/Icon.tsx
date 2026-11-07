@@ -20,6 +20,9 @@ export type IconName =
     | "help"
     | "people"
     | "medkit"
+    | "clipboard"
+    | "notifications"
+    | "arrow-right"
 
 type IoniconName = ComponentProps<typeof Ionicons>["name"]
 
@@ -46,6 +49,9 @@ const ICONS: Record<IconName, IoniconName> = {
     help: "help-circle-outline",
     people: "people-outline",
     medkit: "medkit-outline",
+    clipboard: "clipboard-outline",
+    notifications: "notifications-outline",
+    "arrow-right": "arrow-forward",
 }
 
 type IconProps = {

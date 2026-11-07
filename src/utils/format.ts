@@ -134,6 +134,86 @@ export function isTodayKey(key: string) {
 }
 
 /**
+ * "2026-10-28" -> "Quarta, 28 de outubro de 2026"
+ */
+export function formatLongDateKey(key: string) {
+    const date = parseDateKey(key)
+
+    if (!date) {
+        return key
+    }
+
+    return `${WEEKDAYS_LONG[date.getDay()]}, ${date.getDate()} de ${MONTHS[date.getMonth()].toLowerCase()} de ${date.getFullYear()}`
+}
+
+/**
+ * "2026-10-27" -> "terça, 27/10"
+ */
+export function formatWeekdayDateKey(key: string) {
+    const date = parseDateKey(key)
+
+    if (!date) {
+        return key
+    }
+
+    return `${WEEKDAYS_LONG[date.getDay()].toLowerCase()}, ${formatShortDateKey(key)}`
+}
+
+/**
+ * 60 -> "1 hora"; 90 -> "1 hora e 30 min"; 45 -> "45 min"
+ */
+export function formatDurationLong(minutes: number) {
+    if (minutes < 60) {
+        return `${minutes} min`
+    }
+
+    const hours = Math.floor(minutes / 60)
+    const rest = minutes % 60
+    const hourLabel = hours === 1 ? "1 hora" : `${hours} horas`
+
+    return rest === 0 ? hourLabel : `${hourLabel} e ${rest} min`
+}
+
+/**
+ * "2026-10-28" -> "Hoje" | "Amanhã" | "28/10"
+ */
+export function formatRelativeDayKey(key: string) {
+    const today = new Date()
+    const tomorrow = buildDate(today.getFullYear(), today.getMonth(), today.getDate() + 1)
+
+    if (isTodayKey(key)) {
+        return "Hoje"
+    }
+
+    if (key === dateKey(tomorrow)) {
+        return "Amanhã"
+    }
+
+    return formatShortDateKey(key)
+}
+
+/**
+ * "Novembro 2026"
+ */
+export function formatMonthYear(date: Date = new Date()) {
+    return `${MONTHS[date.getMonth()]} ${date.getFullYear()}`
+}
+
+/**
+ * 60 -> "1h"; 90 -> "1h30"; 45 -> "45 min"
+ */
+export function formatDuration(minutes: number) {
+    if (minutes < 60) {
+        return `${minutes} min`
+    }
+
+    const hours = Math.floor(minutes / 60)
+    const rest = minutes % 60
+
+    return rest === 0 ? `${hours}h` : `${hours}h${pad(rest)}`
+}
+
+/**
  * "2026-10-29T20:54:00.000Z" -> "29/10/2026 às 20:54"
  */
 export function formatTimestamp(iso: string, withTime = true) {
