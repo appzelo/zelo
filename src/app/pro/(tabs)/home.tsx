@@ -16,6 +16,7 @@ import {
     formatLongDateKey,
     formatWeekdayDateKey,
     isTodayKey,
+    weekdayOfKey,
 } from "../../../utils/format"
 import {
     Booking,
@@ -24,6 +25,11 @@ import {
 } from "../../../services/bookings"
 import { Specialist, getSpecialist } from "../../../services/specialists"
 import { Patient, getPatientById } from "../../../services/patient"
+import {
+    SpecialistAvailability,
+    getSpecialistAvailability,
+    saveSpecialistAvailability,
+} from "../../../services/specialistAvailability"
 import AppHeader from "../../../components/AppHeader"
 import StatTile from "../../../components/StatTile"
 import Avatar from "../../../components/Avatar"
@@ -42,7 +48,7 @@ type Visit = {
 export default function ProHome() {
     const [specialist, setSpecialist] = useState<Specialist | null>(null)
     const [visits, setVisits] = useState<Visit[] | null>(null)
-    const [availableToday, setAvailableToday] = useState(true)
+    const [availability, setAvailability] = useState<SpecialistAvailability | null>(null)
 
     const load = useCallback(() => {
         let mounted = true
@@ -50,7 +56,8 @@ export default function ProHome() {
         Promise.all([
             getSpecialist(SPECIALIST_ID),
             listSpecialistBookings(SPECIALIST_ID),
-        ]).then(async ([foundSpecialist, bookings]) => {
+            getSpecialistAvailability(SPECIALIST_ID),
+        ]).then(async ([foundSpecialist, bookings, foundAvailability]) => {
             const patients = await Promise.all(
                 bookings.map((booking) => getPatientById(booking.patientId)),
             )
@@ -60,6 +67,7 @@ export default function ProHome() {
             }
 
             setSpecialist(foundSpecialist)
+            setAvailability(foundAvailability)
             setVisits(
                 bookings.flatMap((booking, index) => {
                     const patient = patients[index]
@@ -79,6 +87,41 @@ export default function ProHome() {
     useEffect(() => subscribeBookings(load), [load])
 
     const today = dateKey(new Date())
+    const todayWeekday = weekdayOfKey(today)
+    const todayHours = availability && todayWeekday !== null
+        ? availability.workingHours[todayWeekday]
+        : null
+
+    const availableToday = todayHours?.enabled === true
+        && !(availability?.blockedDates.includes(today) ?? false)
+
+    async function handleAvailabilityChange(value: boolean) {
+        if (!availability || todayWeekday === null) {
+            return
+        }
+
+        const currentHours = availability.workingHours[todayWeekday]
+
+        // Desligar bloqueia só o dia de hoje; ligar libera o dia e garante
+        // que o dia da semana esteja ativo na agenda.
+        const next: SpecialistAvailability = {
+            ...availability,
+            workingHours: {
+                ...availability.workingHours,
+                [todayWeekday]: {
+                    ...currentHours,
+                    enabled: value ? true : currentHours.enabled,
+                },
+            },
+            blockedDates: value
+                ? availability.blockedDates.filter((key) => key !== today)
+                : Array.from(new Set([...availability.blockedDates, today])),
+        }
+
+        setAvailability(next)
+
+        await saveSpecialistAvailability(next)
+    }
 
     const pendingRequests = (visits ?? []).filter(
         (visit) => visit.booking.status === "pending",
@@ -100,7 +143,7 @@ export default function ProHome() {
                 onSettings={() => router.push("/pro/settings")}
             />
 
-            {visits === null || !specialist ? (
+            {visits === null || !specialist || !availability ? (
                 <View style={styles.centered}>
                     <ActivityIndicator color={colors.blue1} />
                 </View>
@@ -143,7 +186,7 @@ export default function ProHome() {
 
                         <Switch
                             value={availableToday}
-                            onValueChange={setAvailableToday}
+                            onValueChange={handleAvailabilityChange}
                             trackColor={{ false: colors.gray1, true: colors.green1 }}
                             thumbColor={colors.white2}
                             ios_backgroundColor={colors.gray1}

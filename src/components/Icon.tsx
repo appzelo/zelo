@@ -15,7 +15,9 @@ export type IconName =
     | "close"
     | "edit"
     | "settings"
+    | "chevron-left"
     | "chevron-right"
+    | "checkmark-circle"
     | "lock"
     | "help"
     | "people"
@@ -44,7 +46,9 @@ const ICONS: Record<IconName, IoniconName> = {
     close: "close",
     edit: "create-outline",
     settings: "settings-outline",
+    "chevron-left": "chevron-back",
     "chevron-right": "chevron-forward",
+    "checkmark-circle": "checkmark-circle-outline",
     lock: "lock-closed-outline",
     help: "help-circle-outline",
     people: "people-outline",

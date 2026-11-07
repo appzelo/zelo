@@ -33,15 +33,16 @@ export const DEFAULT_WORKING_HOURS: Record<number, DayAvailability> = {
 
 const AVAILABILITIES = new Map<string, SpecialistAvailability>()
 
+function cloneWorkingHours(hours: Record<number, DayAvailability>) {
+    return Object.fromEntries(
+        Object.entries(hours).map(([day, value]) => [Number(day), { ...value }]),
+    ) as Record<number, DayAvailability>
+}
+
 function cloneAvailability(availability: SpecialistAvailability): SpecialistAvailability {
     return {
         ...availability,
-        workingHours: Object.fromEntries(
-            Object.entries(availability.workingHours).map(([day, hours]) => [
-                Number(day),
-                { ...hours },
-            ]),
-        ),
+        workingHours: cloneWorkingHours(availability.workingHours),
         blockedDates: [...availability.blockedDates],
     }
 }
@@ -58,7 +59,7 @@ export async function getSpecialistAvailability(
     const initial: SpecialistAvailability = {
         specialistId,
         radiusKm: 10,
-        workingHours: { ...DEFAULT_WORKING_HOURS },
+        workingHours: cloneWorkingHours(DEFAULT_WORKING_HOURS),
         blockedDates: [],
     }
 

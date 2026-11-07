@@ -134,6 +134,15 @@ export function isTodayKey(key: string) {
 }
 
 /**
+ * "2026-10-28" -> 0 (domingo) ... 6 (sábado)
+ */
+export function weekdayOfKey(key: string) {
+    const date = parseDateKey(key)
+
+    return date ? date.getDay() : null
+}
+
+/**
  * "2026-10-28" -> "Quarta, 28 de outubro de 2026"
  */
 export function formatLongDateKey(key: string) {
