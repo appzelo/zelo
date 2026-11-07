@@ -25,6 +25,9 @@ export type IconName =
     | "clipboard"
     | "notifications"
     | "arrow-right"
+    | "play"
+    | "stop"
+    | "cash"
 
 type IoniconName = ComponentProps<typeof Ionicons>["name"]
 
@@ -56,6 +59,9 @@ const ICONS: Record<IconName, IoniconName> = {
     clipboard: "clipboard-outline",
     notifications: "notifications-outline",
     "arrow-right": "arrow-forward",
+    play: "play-circle-outline",
+    stop: "stop-circle-outline",
+    cash: "cash-outline",
 }
 
 type IconProps = {
