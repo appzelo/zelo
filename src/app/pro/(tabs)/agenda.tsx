@@ -238,7 +238,6 @@ export default function ProAgenda() {
             <AppHeader
                 title="Minha agenda"
                 subtitle="Horários, bloqueios e raio de atendimento"
-                onSettings={() => router.push("/pro/settings")}
             />
 
             {loading ? (

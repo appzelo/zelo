@@ -10,7 +10,6 @@ export default function ProRequests() {
             <AppHeader
                 title="Pedidos"
                 subtitle="Solicitações de atendimento"
-                onSettings={() => router.push("/pro/settings")}
             />
 
             <View style={styles.centered}>
