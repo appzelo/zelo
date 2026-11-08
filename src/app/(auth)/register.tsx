@@ -33,18 +33,21 @@ export default function Register() {
                 ></SectionText>
                 <View style={styles.cards}>
                     <ProfileCard 
+                        icon="user"
                         title="Ser paciente" 
                         description="Desejo encontrar profissionais para cuidar da minha saúde em casa." 
                         selected={selectedCard === "patient"} 
                         onPress={() => setSelectedCard("patient")}
                     ></ProfileCard>
                     <ProfileCard 
+                        icon="people"
                         title="Sou Familiar/Responsável" 
                         description="Quero contratar e acompanhar atendimentos para um familiar de minha responsabilidade." 
                         selected={selectedCard === "guardian"} 
                         onPress={() => setSelectedCard("guardian")}
                     ></ProfileCard>
                     <ProfileCard 
+                        icon="medkit"
                         title="Sou Especialista da Saúde" 
                         description="Sou enfermeiro, fisio ou médico e quero oferecer meus serviços domiciliares." 
                         selected={selectedCard === "specialist"} 
