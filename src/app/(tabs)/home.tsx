@@ -11,6 +11,7 @@ export default function Home() {
                 <LocationHeader
                     patientName="Maria das Dores"
                     address="Av. Paulista, 1578"
+                    onSettings={() => router.push("/settings")}
                 />
 
                 <Text style={styles.welcome}>{`Bem-vinda,${"\n"}Maria`}</Text>

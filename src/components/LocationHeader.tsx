@@ -1,15 +1,17 @@
-import { View, Text, StyleSheet } from "react-native"
+import { View, Text, Pressable, StyleSheet } from "react-native"
 import { colors } from "../utils/constants/colors"
 import Icon from "./Icon"
 
 type LocationHeaderProps = {
     patientName: string,
     address: string,
+    onSettings: () => void,
 }
 
 export default function LocationHeader({
     patientName,
     address,
+    onSettings,
 }: LocationHeaderProps) {
     return (
         <View style={styles.header}>
@@ -21,9 +23,15 @@ export default function LocationHeader({
                 </View>
             </View>
 
-            <View style={styles.avatar}>
-                <View style={styles.avatarDot}></View>
-            </View>
+            <Pressable
+                style={({ pressed }) => [styles.settings, pressed && styles.settingsPressed]}
+                onPress={onSettings}
+                accessibilityRole="button"
+                accessibilityLabel="Configurações"
+                hitSlop={6}
+            >
+                <Icon name="settings" size={20} color={colors.blue1} />
+            </Pressable>
         </View>
     )
 }
@@ -58,19 +66,18 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
 
-    avatar: {
+    settings: {
         alignItems: "center",
-        backgroundColor: colors.green2,
-        borderRadius: 17,
-        height: 34,
+        backgroundColor: colors.white2,
+        borderColor: colors.gray3,
+        borderRadius: 21,
+        borderWidth: 1.5,
+        height: 42,
         justifyContent: "center",
-        width: 34,
+        width: 42,
     },
 
-    avatarDot: {
-        backgroundColor: colors.green1,
-        borderRadius: 5,
-        height: 10,
-        width: 10,
+    settingsPressed: {
+        backgroundColor: colors.blue2,
     },
 })

@@ -12,6 +12,7 @@ import { router } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { colors } from "../../utils/constants/colors"
 import AppButton from "../../components/AppButton"
+import BackHeader from "../../components/BackHeader"
 import Icon, { IconName } from "../../components/Icon"
 import SearchBar from "../../components/SearchBar"
 
@@ -71,12 +72,19 @@ export default function Settings() {
     const filtered = rows.filter((row) => row.label.toLowerCase().includes(term))
 
     return (
-        <View style={[styles.container, { paddingTop: insets.top + 18 }]}>
-            <View style={styles.content}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Configurações</Text>
-                    <Text style={styles.subtitle}>Conta e preferências</Text>
-                </View>
+        <View style={styles.container}>
+            <BackHeader text="Configurações" />
+
+            <ScrollView
+                contentContainerStyle={[
+                    styles.scrollContent,
+                    { paddingBottom: Math.max(insets.bottom, 12) + 20 },
+                ]}
+                keyboardShouldPersistTaps="handled"
+                onScrollBeginDrag={Keyboard.dismiss}
+                showsVerticalScrollIndicator={false}
+            >
+                <Text style={styles.subtitle}>Conta e preferências</Text>
 
                 <SearchBar
                     value={query}
@@ -84,70 +92,62 @@ export default function Settings() {
                     placeholder="Buscar uma configuração..."
                 />
 
-                <ScrollView
-                    style={styles.scrollView}
-                    contentContainerStyle={styles.scrollContent}
-                    keyboardShouldPersistTaps="handled"
-                    onScrollBeginDrag={Keyboard.dismiss}
-                    showsVerticalScrollIndicator={false}
-                >
-                    {filtered.length > 0 ? (
-                        <View style={styles.listCard}>
-                            {filtered.map((row, index) => (
-                                <View key={row.key}>
-                                    {index > 0 && <View style={styles.divider} />}
+                {filtered.length > 0 ? (
+                    <View style={styles.listCard}>
+                        {filtered.map((row, index) => (
+                            <View key={row.key}>
+                                {index > 0 && <View style={styles.divider} />}
 
-                                    <Pressable
-                                        style={({ pressed }) => [
-                                            styles.row,
-                                            pressed && styles.rowPressed,
-                                        ]}
-                                        onPress={row.onPress}
-                                        accessibilityRole="button"
-                                        accessibilityLabel={row.label}
-                                    >
-                                        <View style={styles.rowIcon}>
-                                            <Icon
-                                                name={row.icon}
-                                                size={22}
-                                                color={colors.blue1}
-                                            />
-                                        </View>
-
-                                        <Text style={styles.rowLabel}>{row.label}</Text>
-
+                                <Pressable
+                                    style={({ pressed }) => [
+                                        styles.row,
+                                        pressed && styles.rowPressed,
+                                    ]}
+                                    onPress={row.onPress}
+                                    accessibilityRole="button"
+                                    accessibilityLabel={row.label}
+                                >
+                                    <View style={styles.rowIcon}>
                                         <Icon
-                                            name="chevron-right"
-                                            size={18}
-                                            color={colors.gray2}
+                                            name={row.icon}
+                                            size={22}
+                                            color={colors.blue1}
                                         />
-                                    </Pressable>
-                                </View>
-                            ))}
-                        </View>
-                    ) : (
-                        <View style={styles.empty}>
-                            <Text style={styles.emptyText}>
-                                Nenhuma configuração encontrada.
-                            </Text>
-                        </View>
-                    )}
+                                    </View>
 
-                    <View style={styles.logoutSection}>
-                        <View style={styles.divider} />
+                                    <Text style={styles.rowLabel}>{row.label}</Text>
 
-                        <AppButton
-                            text="Sair da conta"
-                            variant="danger"
-                            onPress={handleLogout}
-                        />
-
-                        <Text style={styles.logoutHint}>
-                            Você precisará entrar novamente para acessar seus atendimentos.
+                                    <Icon
+                                        name="chevron-right"
+                                        size={18}
+                                        color={colors.gray2}
+                                    />
+                                </Pressable>
+                            </View>
+                        ))}
+                    </View>
+                ) : (
+                    <View style={styles.empty}>
+                        <Text style={styles.emptyText}>
+                            Nenhuma configuração encontrada.
                         </Text>
                     </View>
-                </ScrollView>
-            </View>
+                )}
+
+                <View style={styles.logoutSection}>
+                    <View style={styles.divider} />
+
+                    <AppButton
+                        text="Sair da conta"
+                        variant="danger"
+                        onPress={handleLogout}
+                    />
+
+                    <Text style={styles.logoutHint}>
+                        Você precisará entrar novamente para acessar seus atendimentos.
+                    </Text>
+                </View>
+            </ScrollView>
         </View>
     )
 }
@@ -160,36 +160,15 @@ const styles = StyleSheet.create({
         width: "100%",
     },
 
-    content: {
-        flex: 1,
-    },
-
-    header: {
-        gap: 4,
-        marginBottom: 18,
-    },
-
-    title: {
-        color: colors.blue1,
-        fontSize: 26,
-        fontWeight: "bold",
+    scrollContent: {
+        flexGrow: 1,
+        gap: 18,
+        paddingTop: 4,
     },
 
     subtitle: {
         color: colors.gray2,
         fontSize: 13,
-    },
-
-    scrollView: {
-        flex: 1,
-        marginTop: 18,
-    },
-
-    scrollContent: {
-        flexGrow: 1,
-        gap: 24,
-        justifyContent: "space-between",
-        paddingBottom: 28,
     },
 
     listCard: {
@@ -245,6 +224,7 @@ const styles = StyleSheet.create({
 
     logoutSection: {
         gap: 12,
+        marginTop: "auto",
     },
 
     logoutHint: {

@@ -33,7 +33,6 @@ export default function TabsLayout() {
             <Tabs.Screen name="home" />
             <Tabs.Screen name="search" listeners={{blur: () => Keyboard.dismiss()}} />
             <Tabs.Screen name="schedule" />
-            <Tabs.Screen name="settings" />
         </Tabs>
     )
 }

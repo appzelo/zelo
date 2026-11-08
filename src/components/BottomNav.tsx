@@ -3,7 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { colors } from "../utils/constants/colors"
 import Icon, { IconName } from "./Icon"
 
-export type TabName = "home" | "search" | "schedule" | "settings" | "agenda" | "requests"
+export type TabName = "home" | "search" | "schedule" | "agenda" | "requests"
 
 export type BottomNavVariant = "patient" | "specialist"
 
@@ -17,7 +17,6 @@ const patientTabs: { name: TabName, label: string, icon: IconName }[] = [
     { name: "home", label: "Início", icon: "home" },
     { name: "search", label: "Buscar", icon: "search" },
     { name: "schedule", label: "Agenda", icon: "calendar" },
-    { name: "settings", label: "Ajustes", icon: "settings" },
 ]
 
 const specialistTabs: { name: TabName, label: string, icon: IconName }[] = [
