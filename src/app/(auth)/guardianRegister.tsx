@@ -69,6 +69,7 @@ export default function guardianRegister() {
                                 label="CPF"
                                 placeholder="000.000.000-00"
                                 keyboardType="number-pad"
+                                mask="cpf"
                                 required
                             ></AppInput> 
                             <AppInput
@@ -78,6 +79,7 @@ export default function guardianRegister() {
                                 label="Nascimento"
                                 placeholder="DD/MM/AAAA"
                                 keyboardType="number-pad"
+                                mask="date"
                                 required
                             ></AppInput> 
                         </View>
@@ -103,6 +105,7 @@ export default function guardianRegister() {
                             label="Celular (WhatsApp)" 
                             placeholder="(XX) XXXXX-XXXX" 
                             keyboardType="phone-pad"
+                            mask="phone"
                             required
                         ></AppInput>                            
                         <AppInput 

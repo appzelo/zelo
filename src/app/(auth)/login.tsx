@@ -41,8 +41,9 @@ export default function Login() {
                                 name="identity"
                                 showLabel
                                 label="CPF"
-                                placeholder="Ex.: 000.000.000-00"     
+                                placeholder="Digite seu CPF"
                                 keyboardType="number-pad"
+                                mask="cpf"
                             ></AppInput>
                             <View style={styles.passwordGroup}>
                                 <AppInput 

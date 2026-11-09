@@ -73,6 +73,7 @@ export default function specialistRegister() {
                             placeholder="000.000.000-00" 
                             containerStyle={{flex: 1}}
                             keyboardType="number-pad"
+                            mask="cpf"
                             required
                         ></AppInput>
                         <AppInput 
@@ -97,6 +98,8 @@ export default function specialistRegister() {
                                 label="UF" 
                                 required
                                 containerStyle={{flex: 1}}
+                                mask="uf"
+                                autoCapitalize="characters"
                             ></AppInput>
                         </View>
                         <AppInput 
