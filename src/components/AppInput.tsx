@@ -1,6 +1,7 @@
-import { View, Text, TextInput, StyleSheet, StyleProp, ViewStyle, KeyboardTypeOptions } from "react-native"
+import { View, Text, TextInput, StyleSheet, StyleProp, ViewStyle, KeyboardTypeOptions, TextInputProps } from "react-native"
 import { colors } from "../utils/constants/colors"
 import { Controller, useFormContext } from "react-hook-form"
+import { applyMask, InputMask, MASK_MAX_LENGTH } from "../utils/mask"
 
 type AppInputProps = {
     name: string,
@@ -11,6 +12,9 @@ type AppInputProps = {
     containerStyle?: StyleProp<ViewStyle>,
     keyboardType?: KeyboardTypeOptions,
     required?: boolean,
+    mask?: InputMask,
+    maxLength?: number,
+    autoCapitalize?: TextInputProps["autoCapitalize"],
 }
 
 export default function AppInput({
@@ -22,6 +26,9 @@ export default function AppInput({
     containerStyle,
     keyboardType = "default",
     required = false,
+    mask,
+    maxLength,
+    autoCapitalize,
 }: AppInputProps) {
     const { control } = useFormContext()
 
@@ -40,8 +47,10 @@ export default function AppInput({
                         style={styles.input}
                         secureTextEntry={secureTextEntry}
                         value={value ?? ""}
-                        onChangeText={onChange}
+                        onChangeText={(text) => onChange(mask ? applyMask(text, mask) : text)}
                         keyboardType={keyboardType}
+                        maxLength={maxLength ?? (mask ? MASK_MAX_LENGTH[mask] : undefined)}
+                        autoCapitalize={autoCapitalize}
                     />
                 )}
             >

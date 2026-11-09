@@ -179,6 +179,7 @@ export default function EditProfile() {
                                     label="Celular"
                                     placeholder="(XX) XXXXX-XXXX"
                                     keyboardType="phone-pad"
+                                    mask="phone"
                                     required
                                 />
                             </View>
@@ -195,6 +196,7 @@ export default function EditProfile() {
                                     label="CEP"
                                     placeholder="00000-000"
                                     keyboardType="number-pad"
+                                    mask="cep"
                                     required
                                 />
 
@@ -238,6 +240,8 @@ export default function EditProfile() {
                                         showLabel
                                         label="UF"
                                         containerStyle={styles.stateInput}
+                                        mask="uf"
+                                        autoCapitalize="characters"
                                         required
                                     />
                                 </View>

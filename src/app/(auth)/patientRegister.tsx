@@ -78,6 +78,7 @@ export default function patientRegister() {
                                 placeholder="000.000.000-00" 
                                 containerStyle={{flex: 1}}
                                 keyboardType="number-pad"
+                                mask="cpf"
                                 required
                             ></AppInput>
                             <AppInput 
@@ -87,6 +88,7 @@ export default function patientRegister() {
                                 placeholder="DD/MM/AAAA" 
                                 containerStyle={{flex: 1}}
                                 keyboardType="number-pad"
+                                mask="date"
                                 required
                             ></AppInput>
                         </View>
@@ -115,6 +117,7 @@ export default function patientRegister() {
                             placeholder="(XX) XXXXX-XXXX" 
                             containerStyle={{flex: 1}}
                             keyboardType="phone-pad"
+                            mask="phone"
                             required
                         ></AppInput>
 
@@ -129,6 +132,7 @@ export default function patientRegister() {
                             label="CEP" 
                             placeholder="00000-000"
                             keyboardType="number-pad"
+                            mask="cep"
                             required
                         ></AppInput>
                         <View style={styles.row}>
@@ -167,6 +171,8 @@ export default function patientRegister() {
                                 showLabel
                                 label="UF" 
                                 containerStyle={{flex: 1}}
+                                mask="uf"
+                                autoCapitalize="characters"
                                 required
                             ></AppInput>
                         </View>
