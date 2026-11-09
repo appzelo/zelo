@@ -14,12 +14,12 @@
 
 <br />
 <div align="center">
-  <img src="src/assets/zelo.png" alt="Logo" width="80" height="80">
+  <img src="assets/zelo.png" alt="Logo" width="80" height="80">
 
   <h2 align="center">Zelo</h2>
 
   <p align="center">
-    Conectando pacientes a profissionais da saúde por meio do atendimento domiciliar.
+    Conforto e cuidado para você.
     <!-- <br /> -->
     <!-- <a href="<link-da-documentacao>"><strong>Documentação »</strong></a> -->
     <br />
