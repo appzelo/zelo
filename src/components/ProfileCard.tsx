@@ -1,7 +1,9 @@
 import { View, Text, Pressable, StyleSheet } from "react-native"
 import { colors } from "../utils/constants/colors"
+import Icon, { IconName } from "./Icon"
 
 type SelectionCardProps = {
+    icon: IconName,
     title: string,
     description: string,
     selected: boolean,
@@ -9,7 +11,7 @@ type SelectionCardProps = {
 }
 
 export default function SelectionCard({
-    // icon,
+    icon,
     title,
     description,
     selected,
@@ -18,7 +20,11 @@ export default function SelectionCard({
     return (
         <Pressable style={[styles.card, selected && styles.cardSelected]} onPress={onPress}>
             <View style={[styles.iconContainer, selected && styles.iconContainerSelected]}>
-                <Text style={[styles.icon, selected && styles.iconSelected]}>Icon</Text>
+                <Icon
+                    name={icon}
+                    size={26}
+                    color={selected ? colors.green1 : colors.gray2}
+                />
             </View>
 
             <View style={styles.textContainer}>
@@ -42,7 +48,6 @@ const styles = StyleSheet.create({
         borderWidth: 3,
         flexDirection: "row",
         gap: 15,
-        maxHeight: 130,
         padding: 15,
         width: "100%",
     },
@@ -62,15 +67,6 @@ const styles = StyleSheet.create({
 
     iconContainerSelected: {
         backgroundColor: colors.green2,
-    },
-
-    icon: {
-        color: colors.gray2,
-        fontWeight: "bold"
-    },
-
-    iconSelected: {
-        color: colors.green1,
     },
 
     textContainer: {

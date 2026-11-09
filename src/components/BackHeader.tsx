@@ -1,5 +1,6 @@
 import { View, Pressable, Text, StyleSheet } from "react-native"
 import { router } from "expo-router"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { colors } from "../utils/constants/colors"
 
 type BackHeaderProps = {
@@ -11,8 +12,10 @@ export default function BackHeader({
     text,
     onPress = () => {router.back()},
 }: BackHeaderProps) {
+    const insets = useSafeAreaInsets()
+
     return (
-        <View style={styles.header}>
+        <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
             <Pressable style={styles.back} onPress={onPress}>
                 <Text style={styles.backIcon}>←</Text>
             </Pressable>
@@ -27,7 +30,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         gap: 12,
         paddingBottom: 15,
-        paddingTop: 50,
     },
 
     back: {
@@ -35,19 +37,20 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         backgroundColor: colors.white2,
         borderColor: colors.gray1,
-        borderRadius: "100%",
+        borderRadius: 22,
         borderWidth: 2,
-        height: 48,
-        width: 48,
+        height: 44,
+        width: 44,
     },
 
     backIcon: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: "bold",
     },
 
     text: {
-        fontSize: 20,
+        flexShrink: 1,
+        fontSize: 18,
         fontWeight: "bold",
     },
 })

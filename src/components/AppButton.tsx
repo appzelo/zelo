@@ -1,35 +1,55 @@
-import { Text, Pressable, StyleSheet } from "react-native"
+import { View, Text, Pressable, StyleSheet } from "react-native"
 import { colors } from "../utils/constants/colors"
+import Icon, { IconName } from "./Icon"
 
 type AppButtonProps = {
 	text: string,
 	onPress?: () => void,
-	variant?: "primary" | "secondary",
+	variant?: "primary" | "secondary" | "danger",
+	icon?: IconName,
+	disabled?: boolean,
 }
 
 export default function AppButton({
 	text,
 	onPress,
 	variant = "primary",
+	icon,
+	disabled = false,
 }: AppButtonProps) {
+	const primary = variant === "primary"
+
 	return (
 		<Pressable 
 			style={[
 				styles.button, 
-				variant === "primary" && styles.primaryButton,
+				primary && styles.primaryButton,
 				variant === "secondary" && styles.secondaryButton,
+				variant === "danger" && styles.dangerButton,
+				disabled && styles.disabled,
 			]} 
 			onPress={onPress}
+			disabled={disabled}
 		>
-        	<Text 
-				style={[
-					styles.buttonText, 
-					variant === "primary" && styles.primaryText,
-					variant === "secondary" && styles.secondaryText,
-				]}
-			>
-				{text}
-			</Text>
+			<View style={styles.content}>
+				{icon && (
+					<Icon
+						name={icon}
+						size={18}
+						color={primary ? colors.white2 : variant === "danger" ? colors.red1 : colors.blue1}
+					/>
+				)}
+				<Text 
+					style={[
+						styles.buttonText, 
+						primary && styles.primaryText,
+						variant === "secondary" && styles.secondaryText,
+						variant === "danger" && styles.dangerText,
+					]}
+				>
+					{text}
+				</Text>
+			</View>
     	</Pressable>
 	)
 }
@@ -43,6 +63,12 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         width: "100%",
     },
+
+	content: {
+		alignItems: "center",
+		flexDirection: "row",
+		gap: 8,
+	},
 
     buttonText: {
         fontSize: 18,
@@ -65,5 +91,19 @@ const styles = StyleSheet.create({
 
 	secondaryText: {
         color: colors.blue1,
+	},
+
+	dangerButton: {
+        backgroundColor: colors.white2,
+        borderColor: colors.red1,
+        borderWidth: 2,
+	},
+
+	dangerText: {
+        color: colors.red1,
+	},
+
+	disabled: {
+		opacity: 0.45,
 	},
 })

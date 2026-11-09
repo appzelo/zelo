@@ -5,7 +5,7 @@ import AppButton from "../../components/AppButton"
 import AppInput from "../../components/AppInput"
 import { useForm, FormProvider } from "react-hook-form"
 
-export default function Index() {
+export default function Login() {
     type LoginForm = {
         identity: string,
         password: string,
@@ -20,6 +20,9 @@ export default function Index() {
 
     const onSubmit = (data: LoginForm) => {
         console.log(data)
+
+        // Entrar leva para a home e remove o login do histórico.
+        router.replace("/home")
     }
 
     return (
@@ -38,8 +41,9 @@ export default function Index() {
                                 name="identity"
                                 showLabel
                                 label="CPF"
-                                placeholder="Ex.: 000.000.000-00"     
+                                placeholder="Digite seu CPF"
                                 keyboardType="number-pad"
+                                mask="cpf"
                             ></AppInput>
                             <View style={styles.passwordGroup}>
                                 <AppInput 
