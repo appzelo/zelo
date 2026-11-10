@@ -26,26 +26,32 @@ export default function patientRegister() {
 
     const form = useForm<PatientRegisterForm>({
         defaultValues: {
-            nome: "a",
-            senha: "a",
+            nome: "",
+            senha: "",
             cpf: "",
             dataNascimento: "",
             email: "",
             celular: "",
             endereco: {                
-                cep: "1",
-                rua: "a",
-                numero: "1",
-                bairro: "a",
-                cidade: "a",
-                uf: "a",
+                cep: "",
+                rua: "",
+                numero: "",
+                bairro: "",
+                cidade: "",
+                uf: "",
             }
         }
     })
 
     const onSubmit = async (data: PatientRegisterForm) => {
-        console.log(data)
-        await fetch(`${process.env.EXPO_PUBLIC_COMMON_USER_API}`, {
+        console.log(data);
+        
+        // ===== Formatting fields to fit to DB specifications =====
+        const interDate = data.dataNascimento.replaceAll("/", "-");
+        const reverseDate = interDate.split("-").reverse().join("-");
+        data.dataNascimento = reverseDate;
+
+        await fetch(`${process.env.EXPO_PUBLIC_USER_API}/commonUsers`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -54,7 +60,7 @@ export default function patientRegister() {
             body: JSON.stringify(data),
         })
         .then(async response => {
-            console.log(await response.text())
+            console.log(await response.text());
         })
     }
 
