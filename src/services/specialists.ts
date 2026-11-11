@@ -4,6 +4,8 @@ export type Specialist = {
     specialty: string,
     /** Registro profissional, ex.: "CRM 123456-SP". */
     license: string,
+    email: string,
+    phone: string,
     rating: number,
     reviews: number,
     distanceKm: number,
@@ -14,6 +16,12 @@ export type Specialist = {
     availableToday: boolean,
 }
 
+/** Campos editáveis na tela de perfil do especialista. */
+export type SpecialistProfileInput = Pick<
+    Specialist,
+    "name" | "specialty" | "license" | "email" | "phone"
+>
+
 // Dados temporários até a integração com o backend.
 // Basta trocar o corpo das funções por um fetch.
 const SPECIALISTS: Specialist[] = [
@@ -22,6 +30,8 @@ const SPECIALISTS: Specialist[] = [
         name: "Dr. Marcos Silva",
         specialty: "Fisioterapeuta Geriátrico",
         license: "CRM 123456-SP",
+        email: "marcos.silva@zelo.com.br",
+        phone: "(11) 91234-5678",
         rating: 4.9,
         reviews: 48,
         distanceKm: 2.4,
@@ -35,6 +45,8 @@ const SPECIALISTS: Specialist[] = [
         name: "Dra. Clara Silveira",
         specialty: "Enfermeira Geriatra",
         license: "COREN 987654-SP",
+        email: "clara.silveira@zelo.com.br",
+        phone: "(11) 92345-6789",
         rating: 4.9,
         reviews: 31,
         distanceKm: 1.8,
@@ -92,6 +104,21 @@ export async function searchSpecialists(
 
 export async function getSpecialist(id: string): Promise<Specialist | null> {
     return SPECIALISTS.find((specialist) => specialist.id === id) ?? null
+}
+
+export async function updateSpecialist(
+    id: string,
+    input: SpecialistProfileInput,
+): Promise<Specialist | null> {
+    const specialist = SPECIALISTS.find((item) => item.id === id)
+
+    if (!specialist) {
+        return null
+    }
+
+    Object.assign(specialist, input)
+
+    return specialist
 }
 
 export async function getAvailability(id: string): Promise<string[]> {
