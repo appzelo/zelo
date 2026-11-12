@@ -1,30 +1,50 @@
+import { useState } from "react"
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from "react-native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import BackHeader from "../../components/BackHeader"
 import SectionText from "../../components/SectionText"
 import { colors } from "../../utils/constants/colors"
 import AppInput from "../../components/AppInput"
 import AppButton from "../../components/AppButton"
+import RegistrationSuccess from "../../components/RegistrationSuccess"
+import {
+    MIN_PASSWORD_LENGTH,
+    isValidCEP,
+    isValidCPF,
+    isValidDate,
+    isValidEmail,
+    isValidPhone,
+    isValidUF,
+} from "../../utils/validation"
 import { useForm, FormProvider } from "react-hook-form"
 
-export default function patientRegister() {
-    type PatientRegisterForm = {
-        fullName: string,
-        password: string,
-        cpf: string,
-        birthDate: string,
-        email: string,
-        phone: string,
-        zipCode: string,
-        street: string,
-        streetNumber: string,
-        city: string,
-        state: string,
-    }
+type PatientRegisterForm = {
+    fullName: string,
+    password: string,
+    confirmPassword: string,
+    cpf: string,
+    birthDate: string,
+    email: string,
+    phone: string,
+    zipCode: string,
+    street: string,
+    streetNumber: string,
+    neighborhood: string,
+    city: string,
+    state: string,
+}
+
+export default function PatientRegister() {
+    const insets = useSafeAreaInsets()
+
+    const [submitted, setSubmitted] = useState(false)
 
     const form = useForm<PatientRegisterForm>({
+        mode: "onTouched",
         defaultValues: {
             fullName: "",
             password: "",
+            confirmPassword: "",
             cpf: "",
             birthDate: "",
             email: "",
@@ -32,13 +52,27 @@ export default function patientRegister() {
             zipCode: "",
             street: "",
             streetNumber: "",
+            neighborhood: "",
             city: "",
             state: "",
         }
     })
 
-    const onSubmit = (data: PatientRegisterForm) => {
-        console.log(data)
+    function onSubmit() {
+        // O cadastro será enviado ao backend. Por enquanto, simulamos o sucesso.
+        setSubmitted(true)
+    }
+
+    if (submitted) {
+        return (
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <BackHeader text="Dados do Paciente" />
+                </View>
+
+                <RegistrationSuccess message="Conta de paciente criada com sucesso. Entre com o CPF e a senha cadastrados." />
+            </View>
+        )
     }
 
     return(
@@ -52,7 +86,10 @@ export default function patientRegister() {
             >
 
                 <ScrollView 
-                    contentContainerStyle={styles.scrollContent} 
+                    contentContainerStyle={[
+                        styles.scrollContent,
+                        { paddingBottom: insets.bottom + 24 },
+                    ]}
                     keyboardShouldPersistTaps="handled"
                 >
                     <SectionText 
@@ -68,6 +105,14 @@ export default function patientRegister() {
                             showLabel
                             label="Nome Completo" 
                             placeholder="Seu nome completo"
+                            autoCapitalize="words"
+                            rules={{
+                                required: "Informe o nome completo.",
+                                minLength: {
+                                    value: 3,
+                                    message: "Informe o nome completo.",
+                                },
+                            }}
                             required
                         ></AppInput>
                         <View style={styles.row}>
@@ -79,6 +124,10 @@ export default function patientRegister() {
                                 containerStyle={{flex: 1}}
                                 keyboardType="number-pad"
                                 mask="cpf"
+                                rules={{
+                                    validate: (value) => isValidCPF(value)
+                                        || "Informe um CPF válido.",
+                                }}
                                 required
                             ></AppInput>
                             <AppInput 
@@ -89,6 +138,10 @@ export default function patientRegister() {
                                 containerStyle={{flex: 1}}
                                 keyboardType="number-pad"
                                 mask="date"
+                                rules={{
+                                    validate: (value) => isValidDate(value)
+                                        || "Informe uma data válida.",
+                                }}
                                 required
                             ></AppInput>
                         </View>
@@ -98,6 +151,25 @@ export default function patientRegister() {
                             label="Senha" 
                             placeholder="Digite sua senha" 
                             secureTextEntry={true}
+                            rules={{
+                                required: "Informe uma senha.",
+                                minLength: {
+                                    value: MIN_PASSWORD_LENGTH,
+                                    message: `Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`,
+                                },
+                            }}
+                            required
+                        ></AppInput>
+                        <AppInput 
+                            name="confirmPassword"
+                            showLabel
+                            label="Confirmar Senha" 
+                            placeholder="Repita a senha" 
+                            secureTextEntry={true}
+                            rules={{
+                                validate: (value, values) => value === values.password
+                                    || "As senhas não coincidem.",
+                            }}
                             required
                         ></AppInput>
                         {/* <AppInput showLabel label="Necessidade Especial/Deficiência"></AppInput> */}
@@ -108,6 +180,11 @@ export default function patientRegister() {
                             placeholder="email@exemplo.com" 
                             containerStyle={{flex: 1}}
                             keyboardType="email-address"
+                            autoCapitalize="none"
+                            rules={{
+                                validate: (value) => isValidEmail(value)
+                                    || "Informe um e-mail válido.",
+                            }}
                             required
                         ></AppInput>
                         <AppInput 
@@ -118,6 +195,10 @@ export default function patientRegister() {
                             containerStyle={{flex: 1}}
                             keyboardType="phone-pad"
                             mask="phone"
+                            rules={{
+                                validate: (value) => isValidPhone(value)
+                                    || "Informe um celular válido.",
+                            }}
                             required
                         ></AppInput>
 
@@ -133,6 +214,10 @@ export default function patientRegister() {
                             placeholder="00000-000"
                             keyboardType="number-pad"
                             mask="cep"
+                            rules={{
+                                validate: (value) => isValidCEP(value)
+                                    || "Informe um CEP válido.",
+                            }}
                             required
                         ></AppInput>
                         <View style={styles.row}>
@@ -141,6 +226,8 @@ export default function patientRegister() {
                                 showLabel
                                 label="Rua/Avenida" 
                                 containerStyle={{flex: 2}}
+                                autoCapitalize="words"
+                                rules={{ required: "Informe a rua/avenida." }}
                                 required
                             ></AppInput>
                             <AppInput
@@ -149,6 +236,7 @@ export default function patientRegister() {
                                 label="Nº" 
                                 containerStyle={{flex: 1}}
                                 keyboardType="number-pad"
+                                rules={{ required: "Informe o número." }}
                                 required
                             ></AppInput>
                         </View>
@@ -156,6 +244,8 @@ export default function patientRegister() {
                             name="neighborhood"
                             showLabel
                             label="Bairro" 
+                            autoCapitalize="words"
+                            rules={{ required: "Informe o bairro." }}
                             required
                         ></AppInput>
                         <View style={styles.row}>
@@ -164,6 +254,8 @@ export default function patientRegister() {
                                 showLabel
                                 label="Cidade" 
                                 containerStyle={{flex: 3}}
+                                autoCapitalize="words"
+                                rules={{ required: "Informe a cidade." }}
                                 required
                             ></AppInput>
                             <AppInput
@@ -173,6 +265,10 @@ export default function patientRegister() {
                                 containerStyle={{flex: 1}}
                                 mask="uf"
                                 autoCapitalize="characters"
+                                rules={{
+                                    validate: (value) => isValidUF(value)
+                                        || "UF inválida.",
+                                }}
                                 required
                             ></AppInput>
                         </View>
@@ -189,7 +285,6 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         backgroundColor: colors.white1,
         flex: 1,
-        paddingBottom: 70,
         width: "100%"
     },
 
