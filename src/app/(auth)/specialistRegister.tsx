@@ -19,7 +19,7 @@ export default function specialistRegister() {
         professionalLicense: string,
         licenseState: string,
         primarySpecialty: string, 
-        maxDistance: string,
+        maxDistance: number,
         email: string,
         phone: string
     }
@@ -32,13 +32,14 @@ export default function specialistRegister() {
             professionalLicense: "",
             licenseState: "",
             primarySpecialty: "",
-            maxDistance: String(minValue),
+            maxDistance: minValue,
             email: "",
             phone: ""
         }
     })
 
     const onSubmit = async (data: SpecialistRegisterForm) => {
+        console.log(data)
         await fetch(`${process.env.EXPO_PUBLIC_USER_API}/specialistUsers`, {
             method: 'POST',
             headers: {
@@ -126,7 +127,7 @@ export default function specialistRegister() {
                         <AppSlider 
                             name="maxDistance"
                             title="Distância Máxima de Atendimento" 
-                            minValue={minValue} 
+                            minValue={(minValue)} 
                             maxValue={50} 
                             metricUnit="km"
                         ></AppSlider>

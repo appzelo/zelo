@@ -1,5 +1,5 @@
 export type Patient = {
-    id: string,
+    cpf: string,
     /** Nome curto, usado nos resumos do app. */
     name: string,
     /** Nome completo, usado na área do especialista. */
@@ -21,7 +21,7 @@ export type Patient = {
 
 // Dados temporários até a integração com o backend.
 const PATIENT: Patient = {
-    id: "1",
+    cpf: "1",
     name: "Maria das Dores",
     fullName: "Maria das Dores Oliveira",
     birthDate: "1952-04-15",
@@ -40,7 +40,7 @@ const PATIENT: Patient = {
 // Pacientes dos atendimentos do profissional no modo demonstração.
 const EXTRA_PATIENTS: Patient[] = [
     {
-        id: "2",
+        cpf: "2",
         name: "Antônio Pereira",
         fullName: "Antônio Pereira",
         birthDate: "1951-03-18",
@@ -56,7 +56,7 @@ const EXTRA_PATIENTS: Patient[] = [
         phone: "(11) 97654-3210",
     },
     {
-        id: "3",
+        cpf: "3",
         name: "Helena Costa",
         fullName: "Helena Costa",
         birthDate: "1949-11-05",
@@ -72,7 +72,7 @@ const EXTRA_PATIENTS: Patient[] = [
         phone: "(11) 96543-2109",
     },
     {
-        id: "4",
+        cpf: "4",
         name: "José Almeida",
         fullName: "José Almeida",
         birthDate: "1947-07-22",
@@ -88,7 +88,7 @@ const EXTRA_PATIENTS: Patient[] = [
         phone: "(11) 95432-1098",
     },
     {
-        id: "5",
+        cpf: "5",
         name: "Lúcia Fernandes",
         fullName: "Lúcia Fernandes",
         birthDate: "1953-02-14",
@@ -112,16 +112,16 @@ export async function getPatient(): Promise<Patient> {
     return patient
 }
 
-export async function getPatientById(id: string): Promise<Patient | null> {
-    if (id === patient.id) {
+export async function getPatientById(cpf: string): Promise<Patient | null> {
+    if (cpf === patient.cpf) {
         return patient
     }
 
-    return EXTRA_PATIENTS.find((item) => item.id === id) ?? null
+    return EXTRA_PATIENTS.find((item) => item.cpf === cpf) ?? null
 }
 
 export async function updatePatient(
-    changes: Partial<Omit<Patient, "id">>,
+    changes: Partial<Omit<Patient, "cpf">>,
 ): Promise<Patient> {
     patient = { ...patient, ...changes }
 

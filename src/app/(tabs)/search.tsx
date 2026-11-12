@@ -79,9 +79,9 @@ export default function Search() {
                     >
                         {results?.map((specialist) => (
                             <SpecialistCard
-                                key={specialist.id}
+                                key={specialist.cpf}
                                 specialist={specialist}
-                                onPress={() => router.push(`/specialist/${specialist.id}`)}
+                                onPress={() => router.push(`/specialist/${specialist.cpf}`)}
                             />
                         ))}
 

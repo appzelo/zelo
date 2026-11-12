@@ -37,7 +37,7 @@ export default function Schedule() {
         let active = true
 
         getPatient()
-            .then((patient) => listBookings(patient.id))
+            .then((patient) => listBookings(patient.cpf))
             .then(async (found) => {
                 const specialists = await Promise.all(
                     found.map((booking) => getSpecialist(booking.specialistId)),
