@@ -187,7 +187,7 @@ function NextConsultCard({ consult }: { consult: NextConsult }) {
             style={({ pressed }) => [styles.nextCard, pressed && styles.cardPressed]}
             onPress={handlePress}
             accessibilityRole="button"
-            accessibilityLabel={`Próxima consulta com ${specialist.nome}`}
+            accessibilityLabel={`Próxima consulta com ${specialist.fullName}`}
         >
             <View style={styles.nextTop}>
                 <View style={styles.dateRow}>
@@ -204,9 +204,9 @@ function NextConsultCard({ consult }: { consult: NextConsult }) {
                 <Avatar size={44} />
 
                 <View style={styles.specialistInfo}>
-                    <Text style={styles.specialistName}>{specialist.nome}</Text>
+                    <Text style={styles.specialistName}>{specialist.fullName}</Text>
                     <Text style={styles.specialistMeta} numberOfLines={1}>
-                        {`${specialist.especialidade} • ${formatDurationLong(booking.durationMinutes)}`}
+                        {`${specialist.specialty} • ${formatDurationLong(booking.durationMinutes)}`}
                     </Text>
                 </View>
             </View>

@@ -130,15 +130,15 @@ export default function SpecialistProfile() {
                             <Avatar size={60} />
 
                             <View style={styles.profileInfo}>
-                                <Text style={styles.name}>{specialist.nome}</Text>
-                                <Text style={styles.specialty}>{specialist.especialidade}</Text>
+                                <Text style={styles.name}>{specialist.fullName}</Text>
+                                <Text style={styles.specialty}>{specialist.specialty}</Text>
 
                                 <View style={styles.licenseRow}>
                                     <Text style={styles.license} numberOfLines={1}>
-                                        {specialist.registroProfissional}
+                                        {specialist.professionalID}
                                     </Text>
                                     <Text style={styles.star}>★</Text>
-                                    <Text style={styles.rating}>{specialist.avaliacao.toFixed(1)}</Text>
+                                    <Text style={styles.rating}>{specialist.rating.toFixed(1)}</Text>
                                     {/* <Text style={styles.reviews} numberOfLines={1}>
                                         {`(${specialist.reviews} avaliações)`}
                                     </Text> */}
@@ -147,20 +147,20 @@ export default function SpecialistProfile() {
                         </View>
 
                         <View style={styles.tiles}>
-                            <InfoTile label="Distância" value={`${specialist.distUsuario} km`} />
+                            <InfoTile label="Distância" value={`${specialist.distanceToUser} km`} />
                             <InfoTile
                                 label="Valor Hora"
-                                value={formatCurrency(specialist.valorHora)}
+                                value={formatCurrency(specialist.pricePerHour)}
                                 highlight
                             />
-                            <InfoTile label="Atuação" value={`Até ${specialist.distAtendimento}km`} />
+                            <InfoTile label="Atuação" value={`Até ${specialist.maxDistance}km`} />
                         </View>
 
                         <View style={styles.section}>
                             <Text style={styles.sectionTitle}>Pagamentos Aceitos</Text>
 
                             <View style={styles.chipRow}>
-                                {specialist.metodosPagamento.map((method) => (
+                                {specialist.paymentMethods.map((method) => (
                                     <View key={method} style={styles.chip}>
                                         <Text style={styles.chipText}>{method}</Text>
                                     </View>

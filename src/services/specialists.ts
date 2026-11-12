@@ -1,24 +1,24 @@
 export type Specialist = {
     cpf: string,
-    nome: string,
-    especialidade: string,
+    fullName: string,
+    specialty: string,
     /** Registro profissional, ex.: "CRM 123456-SP". */
-    registroProfissional: string,
+    professionalID: string,
     email: string,
-    celular: string,
-    avaliacao: number,
-    valorHora: number,
-    distUsuario: number,
+    phone: string,
+    rating: number,
+    pricePerHour: number,
+    distanceToUser: number,
     /** Raio máximo de atendimento domiciliar. */
-    distAtendimento: number,
-    metodosPagamento: string[],
+    maxDistance: number,
+    paymentMethods: string[],
     availableToday: boolean,
 }
 
 /** Campos editáveis na tela de perfil do especialista. */
 export type SpecialistProfileInput = Pick<
     Specialist,
-    "nome" | "especialidade" | "registroProfissional" | "email" | "celular"
+    "fullName" | "specialty" | "professionalID" | "email" | "phone"
 >
 
 // Dados temporários até a integração com o backend.
@@ -89,14 +89,14 @@ export async function searchSpecialists(
 
     return SPECIALISTS.filter((specialist) => {
         const matchesTerm = !term
-            || specialist.nome.toLowerCase().includes(term)
-            || specialist.especialidade.toLowerCase().includes(term)
+            || specialist.fullName.toLowerCase().includes(term)
+            || specialist.specialty.toLowerCase().includes(term)
 
         const matchesPrice = filters.maxPrice === null
-            || specialist.valorHora <= filters.maxPrice
+            || specialist.pricePerHour <= filters.maxPrice
 
         const matchesDistance = filters.maxDistanceKm === null
-            || specialist.distAtendimento <= filters.maxDistanceKm
+            || specialist.maxDistance <= filters.maxDistanceKm
 
         const matchesToday = !filters.availableToday || specialist.availableToday
 
