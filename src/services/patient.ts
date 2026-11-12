@@ -8,34 +8,35 @@ export type Patient = {
     birthDate: string,
     gender: string,
     /** Endereço completo já formatado para exibição. */
-    address: string,
-    zipCode: string,
-    street: string,
-    streetNumber: string,
-    neighborhood: string,
-    city: string,
-    state: string,
-    email: string,
-    phone: string,
+    address: {
+        zipCode: string,
+        street: string,
+        streetNumber: string,
+        neighborhood: string,
+        city: string,
+        state: string,
+        email: string,
+        phone: string,
+    }
 }
 
 // Dados temporários até a integração com o backend.
-const PATIENT: Patient = {
-    cpf: "1",
-    name: "Maria das Dores",
-    fullName: "Maria das Dores Oliveira",
-    birthDate: "1952-04-15",
-    gender: "Feminino",
-    address: "Avenida Paulista, 1578 - Bela Vista, São Paulo - SP",
-    zipCode: "01310-100",
-    street: "Avenida Paulista",
-    streetNumber: "1578",
-    neighborhood: "Bela Vista",
-    city: "São Paulo",
-    state: "SP",
-    email: "maria.oliveira@email.com",
-    phone: "(11) 98765-4321",
-}
+// let PATIENT: Patient //= {
+    // cpf: "1",
+    // name: "Maria das Dores",
+    // fullName: "Maria das Dores Oliveira",
+    // birthDate: "1952-04-15",
+    // gender: "Feminino",
+    // address: "Avenida Paulista, 1578 - Bela Vista, São Paulo - SP",
+    // zipCode: "01310-100",
+    // street: "Avenida Paulista",
+    // streetNumber: "1578",
+    // neighborhood: "Bela Vista",
+    // city: "São Paulo",
+    // state: "SP",
+    // email: "maria.oliveira@email.com",
+    // phone: "(11) 98765-4321",
+//}
 
 // Pacientes dos atendimentos do profissional no modo demonstração.
 const EXTRA_PATIENTS: Patient[] = [
@@ -45,15 +46,16 @@ const EXTRA_PATIENTS: Patient[] = [
         fullName: "Antônio Pereira",
         birthDate: "1951-03-18",
         gender: "Masculino",
-        address: "Rua Abílio Soares, 640 - Paraíso, São Paulo - SP",
-        zipCode: "04005-001",
-        street: "Rua Abílio Soares",
-        streetNumber: "640",
-        neighborhood: "Paraíso",
-        city: "São Paulo",
-        state: "SP",
-        email: "antonio.pereira@email.com",
-        phone: "(11) 97654-3210",
+        address: {
+            zipCode: "04005-001",
+            street: "Rua Abílio Soares",
+            streetNumber: "640",
+            neighborhood: "Paraíso",
+            city: "São Paulo",
+            state: "SP",
+            email: "antonio.pereira@email.com",
+            phone: "(11) 97654-3210",
+        },
     },
     {
         cpf: "3",
@@ -61,15 +63,16 @@ const EXTRA_PATIENTS: Patient[] = [
         fullName: "Helena Costa",
         birthDate: "1949-11-05",
         gender: "Feminino",
-        address: "Rua da Consolação, 2140 - Consolação, São Paulo - SP",
-        zipCode: "01302-001",
-        street: "Rua da Consolação",
-        streetNumber: "2140",
-        neighborhood: "Consolação",
-        city: "São Paulo",
-        state: "SP",
-        email: "helena.costa@email.com",
-        phone: "(11) 96543-2109",
+        address: {
+            zipCode: "01302-001",
+            street: "Rua da Consolação",
+            streetNumber: "2140",
+            neighborhood: "Consolação",
+            city: "São Paulo",
+            state: "SP",
+            email: "helena.costa@email.com",
+            phone: "(11) 96543-2109",
+        },
     },
     {
         cpf: "4",
@@ -77,15 +80,16 @@ const EXTRA_PATIENTS: Patient[] = [
         fullName: "José Almeida",
         birthDate: "1947-07-22",
         gender: "Masculino",
-        address: "Rua Galvão Bueno, 512 - Liberdade, São Paulo - SP",
-        zipCode: "01506-000",
-        street: "Rua Galvão Bueno",
-        streetNumber: "512",
-        neighborhood: "Liberdade",
-        city: "São Paulo",
-        state: "SP",
-        email: "jose.almeida@email.com",
-        phone: "(11) 95432-1098",
+        address: {
+            zipCode: "01506-000",
+            street: "Rua Galvão Bueno",
+            streetNumber: "512",
+            neighborhood: "Liberdade",
+            city: "São Paulo",
+            state: "SP",
+            email: "jose.almeida@email.com",
+            phone: "(11) 95432-1098",
+        },
     },
     {
         cpf: "5",
@@ -93,20 +97,36 @@ const EXTRA_PATIENTS: Patient[] = [
         fullName: "Lúcia Fernandes",
         birthDate: "1953-02-14",
         gender: "Feminino",
-        address: "Rua Oscar Freire, 980 - Jardins, São Paulo - SP",
-        zipCode: "01426-001",
-        street: "Rua Oscar Freire",
-        streetNumber: "980",
-        neighborhood: "Jardins",
-        city: "São Paulo",
-        state: "SP",
-        email: "lucia.fernandes@email.com",
-        phone: "(11) 94321-0987",
+        address: {
+            zipCode: "01426-001",
+            street: "Rua Oscar Freire",
+            streetNumber: "980",
+            neighborhood: "Jardins",
+            city: "São Paulo",
+            state: "SP",
+            email: "lucia.fernandes@email.com",
+            phone: "(11) 94321-0987",
+        },
     },
 ]
 
+export async function setPatient(cpf: string): Promise<void> {
+    // const PATIENT: Patient = 
+    const response = await fetch(`${process.env.EXPO_PUBLIC_USER_API}/commonUsers/${cpf}`, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }
+    })
+    const responseJson: Patient = await response.json()
+
+    patient = responseJson;
+    patient.name = formatShortName(patient.fullName);
+}
+
 // Mantido em memória para que as edições do perfil valham durante a sessão.
-let patient = PATIENT
+let patient: Patient;
 
 export async function getPatient(): Promise<Patient> {
     return patient
@@ -133,7 +153,7 @@ export async function updatePatient(
  * "Avenida Paulista, 1578 - Bela Vista, São Paulo - SP"
  */
 export function formatAddress(
-    address: Pick<Patient, "street" | "streetNumber" | "neighborhood" | "city" | "state">,
+    address: Pick<Patient["address"], "street" | "streetNumber" | "neighborhood" | "city" | "state">,
 ): string {
     const streetLine = [address.street, address.streetNumber].filter(Boolean).join(", ")
     const cityLine = [address.neighborhood, address.city].filter(Boolean).join(", ")

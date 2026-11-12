@@ -54,7 +54,12 @@ export default function Login() {
 
         if (loginPassed) {
             // Entrar leva para a home e remove o login do histórico.
-            router.replace("/home")
+            router.replace({
+                pathname: "/home",
+                params: {
+                    cpf: data.cpf
+                }
+            });
         } else {
             console.log("USUÁRIO NÃO ENCONTRADO")
         }

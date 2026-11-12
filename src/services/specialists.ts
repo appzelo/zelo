@@ -81,9 +81,9 @@ export function countActiveFilters(filters: SpecialistFilters): number {
 export async function searchSpecialists(
     query: string,
     filters: SpecialistFilters = DEFAULT_FILTERS,
+    userUF: string,
 ): Promise<Specialist[]> {
-    await fillSpecialistsList();
-    console.log(SPECIALISTS)
+    await fillSpecialistsList(userUF);
 
     const term = query.trim().toLowerCase()
 
@@ -129,8 +129,8 @@ export async function getAvailability(id: string): Promise<string[]> {
     return specialist ? AVAILABLE_SLOTS : []
 }
 
-async function fillSpecialistsList() {
-    await fetch(`${process.env.EXPO_PUBLIC_USER_API}/specialistUsers/`, {
+async function fillSpecialistsList(userUF: string) {
+    await fetch(`${process.env.EXPO_PUBLIC_USER_API}/specialistUsers/${userUF}`, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -140,5 +140,5 @@ async function fillSpecialistsList() {
     .then(async response => {
         const responseJson = await response.json();
         SPECIALISTS = responseJson;
-    })    
+    })
 }

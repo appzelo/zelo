@@ -7,7 +7,7 @@ import {
     ActivityIndicator,
     StyleSheet,
 } from "react-native"
-import { router, useFocusEffect } from "expo-router"
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { colors } from "../../utils/constants/colors"
 import {
@@ -22,7 +22,7 @@ import {
     subscribeBookings,
 } from "../../services/bookings"
 import { Specialist, getSpecialist } from "../../services/specialists"
-import { Patient, getPatient } from "../../services/patient"
+import { Patient, getPatient, setPatient } from "../../services/patient"
 import { BOOKING_STATUS } from "../../utils/constants/bookingStatus"
 import AppButton from "../../components/AppButton"
 import Avatar from "../../components/Avatar"
@@ -39,7 +39,8 @@ type NextConsult = {
 export default function Home() {
     const insets = useSafeAreaInsets()
 
-    const [patient, setPatient] = useState<Patient | null>(null)
+    const { cpf } = useLocalSearchParams<{ cpf: string; }>();
+    const [patient, setCurrentPatient] = useState<Patient | null>(null)
     const [next, setNext] = useState<NextConsult | null>(null)
     const [hasMore, setHasMore] = useState(false)
     const [loaded, setLoaded] = useState(false)
@@ -47,8 +48,10 @@ export default function Home() {
     const load = useCallback(() => {
         let active = true
 
+        setPatient(cpf);
+
         getPatient().then(async (currentPatient) => {
-            const bookings = await listBookings(currentPatient.id)
+            const bookings = await listBookings(currentPatient.cpf)
             const today = dateKey(new Date())
 
             // Próxima consulta: pendente ou confirmada, a partir de hoje.
@@ -66,7 +69,7 @@ export default function Home() {
                 return
             }
 
-            setPatient(currentPatient)
+            setCurrentPatient(currentPatient)
             setNext(
                 upcoming[0] && specialist
                     ? { booking: upcoming[0], specialist }
@@ -106,7 +109,7 @@ export default function Home() {
             >
                 <LocationHeader
                     patientName={patient.name}
-                    address={`${patient.street}, ${patient.streetNumber}`}
+                    address={`${patient.address.street}, ${patient.address.streetNumber}`}
                     onSettings={() => router.push("/settings")}
                 />
 
@@ -184,7 +187,7 @@ function NextConsultCard({ consult }: { consult: NextConsult }) {
             style={({ pressed }) => [styles.nextCard, pressed && styles.cardPressed]}
             onPress={handlePress}
             accessibilityRole="button"
-            accessibilityLabel={`Próxima consulta com ${specialist.name}`}
+            accessibilityLabel={`Próxima consulta com ${specialist.nome}`}
         >
             <View style={styles.nextTop}>
                 <View style={styles.dateRow}>
@@ -201,9 +204,9 @@ function NextConsultCard({ consult }: { consult: NextConsult }) {
                 <Avatar size={44} />
 
                 <View style={styles.specialistInfo}>
-                    <Text style={styles.specialistName}>{specialist.name}</Text>
+                    <Text style={styles.specialistName}>{specialist.nome}</Text>
                     <Text style={styles.specialistMeta} numberOfLines={1}>
-                        {`${specialist.specialty} • ${formatDurationLong(booking.durationMinutes)}`}
+                        {`${specialist.especialidade} • ${formatDurationLong(booking.durationMinutes)}`}
                     </Text>
                 </View>
             </View>

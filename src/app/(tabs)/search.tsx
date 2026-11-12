@@ -13,6 +13,7 @@ import {
     countActiveFilters,
     searchSpecialists,
 } from "../../services/specialists"
+import { getPatient } from "../../services/patient"
 
 export default function Search() {
     const insets = useSafeAreaInsets()
@@ -20,13 +21,14 @@ export default function Search() {
     const [results, setResults] = useState<Specialist[] | null>(null)
     const [filters, setFilters] = useState<SpecialistFilters>(DEFAULT_FILTERS)
     const [filterOpen, setFilterOpen] = useState(false)
+    const userUF = getPatient().then(async (patient) => {return patient.address.state} )
 
     const activeFilters = countActiveFilters(filters)
 
     useEffect(() => {
-        let active = true
+        let active = true 
 
-        searchSpecialists(query, filters).then((found) => {
+        searchSpecialists(query, filters, String(userUF)).then((found) => {
             if (active) {
                 setResults(found)
             }
