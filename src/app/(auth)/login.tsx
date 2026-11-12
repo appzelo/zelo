@@ -54,7 +54,11 @@ export default function Login() {
                                     secureTextEntry={true}
                                 ></AppInput>
 
-                                <Pressable style={styles.forgotPassword}>
+                                <Pressable
+                                    style={styles.forgotPassword}
+                                    onPress={() => router.push("/forgot-password")}
+                                    accessibilityRole="button"
+                                >
                                     <Text style={styles.forgotPasswordText}>Esqueci minha senha</Text>
                                 </Pressable>
                             </View>
