@@ -8,37 +8,37 @@ import { useForm, FormProvider } from "react-hook-form"
 
 export default function patientRegister() {
     type PatientRegisterForm = {
-        nome: string,
-        senha: string,
+        fullName: string,
+        pass: string,
         cpf: string,
-        dataNascimento: string,
+        birthDate: string,
         email: string,
-        celular: string,
-        endereco: {
-            cep: string,
-            rua: string,
-            numero: string,
-            bairro: string,
-            cidade: string,
-            uf: string,
+        phone: string,
+        address: {
+            zipcode: string,
+            street: string,
+            streetNumber: string,
+            neighborhood: string,
+            city: string,
+            state: string,
         }
     }
 
     const form = useForm<PatientRegisterForm>({
         defaultValues: {
-            nome: "",
-            senha: "",
+            fullName: "",
+            pass: "",
             cpf: "",
-            dataNascimento: "",
+            birthDate: "",
             email: "",
-            celular: "",
-            endereco: {                
-                cep: "",
-                rua: "",
-                numero: "",
-                bairro: "",
-                cidade: "",
-                uf: "",
+            phone: "",
+            address: {                
+                zipcode: "",
+                street: "",
+                streetNumber: "",
+                neighborhood: "",
+                city: "",
+                state: "",
             }
         }
     })
@@ -47,9 +47,9 @@ export default function patientRegister() {
         console.log(data);
         
         // ===== Formatting fields to fit to DB specifications =====
-        const interDate = data.dataNascimento.replaceAll("/", "-");
+        const interDate = data.birthDate.replaceAll("/", "-");
         const reverseDate = interDate.split("-").reverse().join("-");
-        data.dataNascimento = reverseDate;
+        data.birthDate = reverseDate;
 
         await fetch(`${process.env.EXPO_PUBLIC_USER_API}/commonUsers`, {
             method: 'POST',
@@ -87,7 +87,7 @@ export default function patientRegister() {
 
                     <FormProvider {...form}>
                         <AppInput 
-                            name="nome"
+                            name="fullName"
                             showLabel
                             label="Nome Completo" 
                             placeholder="Seu nome completo"
@@ -105,7 +105,7 @@ export default function patientRegister() {
                                 required
                             ></AppInput>
                             <AppInput 
-                                name="dataNascimento"
+                                name="birthDate"
                                 showLabel
                                 label="Nascimento" 
                                 placeholder="DD/MM/AAAA" 
@@ -116,7 +116,7 @@ export default function patientRegister() {
                             ></AppInput>
                         </View>
                         <AppInput 
-                            name="senha"
+                            name="pass"
                             showLabel
                             label="Senha" 
                             placeholder="Digite sua senha" 
@@ -134,7 +134,7 @@ export default function patientRegister() {
                             required
                         ></AppInput>
                         <AppInput 
-                            name="celular"
+                            name="phone"
                             showLabel
                             label="Celular" 
                             placeholder="(XX) XXXXX-XXXX" 
@@ -150,7 +150,7 @@ export default function patientRegister() {
                             titleStyle={{fontSize: 18}}
                         ></SectionText>
                         <AppInput
-                            name="endereco.cep"
+                            name="address.zipcode"
                             showLabel
                             label="CEP" 
                             placeholder="00000-000"
@@ -160,14 +160,14 @@ export default function patientRegister() {
                         ></AppInput>
                         <View style={styles.row}>
                             <AppInput
-                                name="endereco.rua"
+                                name="address.street"
                                 showLabel
                                 label="Rua/Avenida" 
                                 containerStyle={{flex: 2}}
                                 required
                             ></AppInput>
                             <AppInput
-                                name="endereco.numero"
+                                name="address.streetNumber"
                                 showLabel
                                 label="Nº" 
                                 containerStyle={{flex: 1}}
@@ -176,21 +176,21 @@ export default function patientRegister() {
                             ></AppInput>
                         </View>
                         <AppInput
-                            name="endereco.bairro"
+                            name="address.neighborhood"
                             showLabel
                             label="Bairro" 
                             required
                         ></AppInput>
                         <View style={styles.row}>
                             <AppInput
-                                name="endereco.cidade"
+                                name="address.city"
                                 showLabel
                                 label="Cidade" 
                                 containerStyle={{flex: 3}}
                                 required
                             ></AppInput>
                             <AppInput
-                                name="endereco.uf"
+                                name="address.state"
                                 showLabel
                                 label="UF" 
                                 containerStyle={{flex: 1}}
