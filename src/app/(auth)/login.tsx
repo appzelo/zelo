@@ -19,8 +19,8 @@ export default function Login() {
     })
 
     const onSubmit = async (data: LoginForm) => {
-        let loginPassed = false;
-
+        let [commonLoginPassed, specialistLoginPassed] = [false, false];
+        
         await fetch(`${process.env.EXPO_PUBLIC_USER_API}/commonUsers/login`, {
             method: 'POST',
             headers: {
@@ -31,11 +31,11 @@ export default function Login() {
         .then(async response => {
             const responseJson = await response.json();
             if (responseJson) {
-                loginPassed = true;
+                commonLoginPassed = true;
             }
         })
 
-        if (!loginPassed) {
+        if (!commonLoginPassed) {
             await fetch(`${process.env.EXPO_PUBLIC_USER_API}/specialistUsers/login`, {
                 method: 'POST',
                 headers: {
@@ -47,15 +47,22 @@ export default function Login() {
             .then(async response => {
                 const responseJson = await response.json();
                 if (responseJson) {
-                    loginPassed = true;
+                    specialistLoginPassed = true;
                 }
             })
         }
 
-        if (loginPassed) {
+        if (commonLoginPassed) {
             // Entrar leva para a home e remove o login do histórico.
             router.replace({
                 pathname: "/home",
+                params: {
+                    cpf: data.cpf
+                }
+            });
+        } else if (specialistLoginPassed) {
+            router.replace({
+                pathname: "/pro/home",
                 params: {
                     cpf: data.cpf
                 }
