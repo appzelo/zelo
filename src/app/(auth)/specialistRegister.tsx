@@ -12,7 +12,7 @@ export default function specialistRegister() {
     const minValue = 2
     const [currentValue, setCurrentValue] = useState(minValue)
 
-    type GuardianRegisterForm = {
+    type SpecialistRegisterForm = {
         fullName: string,
         password: string,
         cpf: string,
@@ -20,9 +20,11 @@ export default function specialistRegister() {
         licenseState: string,
         primarySpecialty: string, 
         maxDistance: number,
+        email: string,
+        phone: string
     }
 
-    const form = useForm<GuardianRegisterForm>({
+    const form = useForm<SpecialistRegisterForm>({
         defaultValues: {
             fullName: "",
             password: "",
@@ -31,11 +33,24 @@ export default function specialistRegister() {
             licenseState: "",
             primarySpecialty: "",
             maxDistance: minValue,
+            email: "",
+            phone: ""
         }
     })
 
-    const onSubmit = (data: GuardianRegisterForm) => {
+    const onSubmit = async (data: SpecialistRegisterForm) => {
         console.log(data)
+        await fetch(`${process.env.EXPO_PUBLIC_USER_API}/specialistUsers`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(async response => {
+            console.log(await response.text());
+        })
     }
 
     return(
@@ -112,7 +127,7 @@ export default function specialistRegister() {
                         <AppSlider 
                             name="maxDistance"
                             title="Distância Máxima de Atendimento" 
-                            minValue={minValue} 
+                            minValue={(minValue)} 
                             maxValue={50} 
                             metricUnit="km"
                         ></AppSlider>
