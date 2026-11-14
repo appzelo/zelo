@@ -7,13 +7,14 @@ export type BookingStatus =
     | "in_progress"
     | "completed"
     | "rejected"
+    | "cancelled"
 
 export type PaymentStatus = "pending" | "paid"
 
 export type Booking = {
     id: string,
-    specialistId: string,
-    patientId: string,
+    specialistCPF: string,
+    patientCPF: string,
     /** Dia no formato "AAAA-MM-DD". */
     date: string,
     /** Horário no formato "HH:MM". */
@@ -29,14 +30,30 @@ export type Booking = {
     distanceKm: number,
     /** Pagamento combinado direto com o profissional. */
     paymentStatus?: PaymentStatus,
+    address: {
+        zipCode: string,
+        street: string,
+        streetNumber: string,
+        neighborhood: string,
+        city: string,
+        state: string
+    }
 }
 
 export type CreateBookingInput = {
-    specialistId: string,
-    patientId: string,
+    specialistCPF: string,
+    patientCPF: string,
     date: string,
     time: string,
     needs: string,
+    address: {
+        zipCode: string,
+        street: string,
+        streetNumber: string,
+        neighborhood: string,
+        city: string,
+        state: string
+    }
 }
 
 export type BookingTotals = {
@@ -58,103 +75,103 @@ function daysFromNow(days: number) {
 }
 
 // Fica em memória durante a sessão até a integração com o backend.
-const BOOKINGS: Booking[] = [
-    {
-        id: "booking-demo",
-        specialistId: "1",
-        patientId: "1",
-        date: daysFromNow(0),
-        time: "10:30",
-        needs: "Auxílio para locomoção (andador). Sequelas leves de AVC, foco em fisioterapia motora.",
-        // Espelha calculateTotals() do Dr. Marcos Silva (R$ 150 + R$ 12 de deslocamento).
-        price: 150,
-        travelFee: 12,
-        total: 162,
-        status: "accepted",
-        durationMinutes: 60,
-        distanceKm: 2.4,
-        paymentStatus: "pending",
-    },
-    {
-        id: "booking-demo-pending",
-        specialistId: "2",
-        patientId: "1",
-        date: daysFromNow(1),
-        time: "14:00",
-        needs: "Acompanhamento de pressão arterial e curativo simples.",
-        // Espelha calculateTotals() da Dra. Clara Silveira (R$ 150 + R$ 9 de deslocamento).
-        price: 150,
-        travelFee: 9,
-        total: 159,
-        status: "pending",
-        durationMinutes: 60,
-        distanceKm: 1.8,
-        paymentStatus: "pending",
-    },
-    {
-        id: "booking-pro-antonio",
-        specialistId: "1",
-        patientId: "2",
-        date: daysFromNow(0),
-        time: "14:00",
-        needs: "Fisioterapia motora para recuperação de cirurgia no quadril.",
-        price: 150,
-        travelFee: 16,
-        total: 166,
-        status: "accepted",
-        durationMinutes: 60,
-        distanceKm: 3.1,
-        paymentStatus: "pending",
-    },
-    {
-        id: "request-pro-helena",
-        specialistId: "1",
-        patientId: "3",
-        date: daysFromNow(1),
-        time: "09:00",
-        needs: "Reabilitação de joelho e treino de equilíbrio.",
-        price: 150,
-        travelFee: 21,
-        total: 171,
-        status: "pending",
-        durationMinutes: 60,
-        distanceKm: 4.2,
-        paymentStatus: "pending",
-    },
-    {
-        id: "request-pro-jose",
-        specialistId: "1",
-        patientId: "4",
-        date: daysFromNow(1),
-        time: "14:00",
-        needs: "Acompanhamento de pressão arterial e caminhada assistida.",
-        price: 150,
-        travelFee: 19,
-        total: 169,
-        status: "pending",
-        durationMinutes: 60,
-        distanceKm: 3.8,
-        paymentStatus: "pending",
-    },
-    {
-        id: "booking-pro-lucia",
-        specialistId: "1",
-        patientId: "5",
-        date: daysFromNow(-1),
-        time: "16:00",
-        needs: "Avaliação inicial de mobilidade.",
-        price: 150,
-        travelFee: 25,
-        total: 175,
-        status: "rejected",
-        durationMinutes: 60,
-        distanceKm: 5,
-        paymentStatus: "pending",
-    },
-]
+const BOOKINGS: Booking[] = []
+//     {
+//         id: "booking-demo",
+//         specialistId: "1",
+//         patientCPF: "1",
+//         date: daysFromNow(0),
+//         time: "10:30",
+//         needs: "Auxílio para locomoção (andador). Sequelas leves de AVC, foco em fisioterapia motora.",
+//         // Espelha calculateTotals() do Dr. Marcos Silva (R$ 150 + R$ 12 de deslocamento).
+//         price: 150,
+//         travelFee: 12,
+//         total: 162,
+//         status: "accepted",
+//         durationMinutes: 60,
+//         distanceKm: 2.4,
+//         paymentStatus: "pending",
+//     },
+//     {
+//         id: "booking-demo-pending",
+//         specialistId: "2",
+//         patientCPF: "1",
+//         date: daysFromNow(1),
+//         time: "14:00",
+//         needs: "Acompanhamento de pressão arterial e curativo simples.",
+//         // Espelha calculateTotals() da Dra. Clara Silveira (R$ 150 + R$ 9 de deslocamento).
+//         price: 150,
+//         travelFee: 9,
+//         total: 159,
+//         status: "pending",
+//         durationMinutes: 60,
+//         distanceKm: 1.8,
+//         paymentStatus: "pending",
+//     },
+//     {
+//         id: "booking-pro-antonio",
+//         specialistId: "1",
+//         patientId: "2",
+//         date: daysFromNow(0),
+//         time: "14:00",
+//         needs: "Fisioterapia motora para recuperação de cirurgia no quadril.",
+//         price: 150,
+//         travelFee: 16,
+//         total: 166,
+//         status: "accepted",
+//         durationMinutes: 60,
+//         distanceKm: 3.1,
+//         paymentStatus: "pending",
+//     },
+//     {
+//         id: "request-pro-helena",
+//         specialistId: "1",
+//         patientId: "3",
+//         date: daysFromNow(1),
+//         time: "09:00",
+//         needs: "Reabilitação de joelho e treino de equilíbrio.",
+//         price: 150,
+//         travelFee: 21,
+//         total: 171,
+//         status: "pending",
+//         durationMinutes: 60,
+//         distanceKm: 4.2,
+//         paymentStatus: "pending",
+//     },
+//     {
+//         id: "request-pro-jose",
+//         specialistId: "1",
+//         patientId: "4",
+//         date: daysFromNow(1),
+//         time: "14:00",
+//         needs: "Acompanhamento de pressão arterial e caminhada assistida.",
+//         price: 150,
+//         travelFee: 19,
+//         total: 169,
+//         status: "pending",
+//         durationMinutes: 60,
+//         distanceKm: 3.8,
+//         paymentStatus: "pending",
+//     },
+//     {
+//         id: "booking-pro-lucia",
+//         specialistId: "1",
+//         patientId: "5",
+//         date: daysFromNow(-1),
+//         time: "16:00",
+//         needs: "Avaliação inicial de mobilidade.",
+//         price: 150,
+//         travelFee: 25,
+//         total: 175,
+//         status: "rejected",
+//         durationMinutes: 60,
+//         distanceKm: 5,
+//         paymentStatus: "pending",
+//     },
+// ]
 
 export function calculateTotals(specialist: Specialist): BookingTotals {
-    const travelFee = Math.round(specialist.distanceKm * TRAVEL_FEE_PER_KM)
+    const travelFee = Math.round(6 * TRAVEL_FEE_PER_KM)//(specialist.distanceKm * TRAVEL_FEE_PER_KM)
 
     return {
         price: specialist.pricePerHour,
@@ -188,8 +205,8 @@ export class BookingConflictError extends Error {
 const ACTIVE_STATUSES: BookingStatus[] = ["pending", "accepted", "in_progress"]
 
 type ConflictInput = {
-    patientId: string,
-    specialistId: string,
+    patientCPF: string,
+    specialistCPF: string,
     date: string,
     time: string,
     /** Ignora o próprio agendamento ao revalidar uma solicitação. */
@@ -209,7 +226,7 @@ export function findConflict(input: ConflictInput): BookingConflict | null {
     )
 
     const sameDay = active.some(
-        (booking) => booking.patientId === input.patientId && booking.date === input.date,
+        (booking) => booking.patientCPF === input.patientCPF && booking.date === input.date,
     )
 
     if (sameDay) {
@@ -218,7 +235,7 @@ export function findConflict(input: ConflictInput): BookingConflict | null {
 
     const sameSlot = active.some(
         (booking) =>
-            booking.specialistId === input.specialistId
+            booking.specialistCPF === input.specialistCPF
             && booking.date === input.date
             && booking.time === input.time,
     )
@@ -237,11 +254,11 @@ export function isBookingConflict(error: unknown): error is BookingConflictError
 }
 
 /** Horários já ocupados do profissional naquele dia. */
-export async function getBookedTimes(specialistId: string, date: string): Promise<string[]> {
+export async function getBookedTimes(specialistCPF: string, date: string): Promise<string[]> {
     return BOOKINGS
         .filter(
             (booking) =>
-                booking.specialistId === specialistId
+                booking.specialistCPF === specialistCPF
                 && booking.date === date
                 && ACTIVE_STATUSES.includes(booking.status),
         )
@@ -250,12 +267,12 @@ export async function getBookedTimes(specialistId: string, date: string): Promis
 
 /** Atendimento ativo do paciente naquele dia, se houver. */
 export async function getPatientDayBooking(
-    patientId: string,
+    patientCPF: string,
     date: string,
 ): Promise<Booking | null> {
     const booking = BOOKINGS.find(
         (item) =>
-            item.patientId === patientId
+            item.patientCPF === patientCPF
             && item.date === date
             && ACTIVE_STATUSES.includes(item.status),
     )
@@ -264,7 +281,8 @@ export async function getPatientDayBooking(
 }
 
 export async function createBooking(input: CreateBookingInput): Promise<Booking> {
-    const specialist = await getSpecialist(input.specialistId)
+    console.log("criando consulta")
+    const specialist = await getSpecialist(input.specialistCPF)
 
     if (!specialist) {
         throw new Error("Especialista não encontrado")
@@ -275,20 +293,35 @@ export async function createBooking(input: CreateBookingInput): Promise<Booking>
     if (conflict) {
         throw new BookingConflictError(conflict)
     }
-
+    
     const booking: Booking = {
         id: `booking-${Date.now()}`,
         ...input,
         ...calculateTotals(specialist),
         status: "pending",
         durationMinutes: 60,
-        distanceKm: specialist.distanceKm,
-        paymentStatus: "pending",
+        distanceKm: 100,//specialist.distanceKm,
+        paymentStatus: "pending"
     }
 
     BOOKINGS.push(booking)
 
     notify(booking)
+
+    console.log("tentando salvar no banco de dados")
+    await fetch(`${process.env.EXPO_PUBLIC_APPT_API}/appointments`, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(booking),
+    })
+    .then(async response => {
+        console.log("oi")
+        const responseJson = await response.json();
+        console.log(responseJson);
+    })
 
     // Cópia, como em getBooking(): o consumidor não mexe no registro em memória.
     return { ...booking }
@@ -303,19 +336,31 @@ export async function getBooking(id: string): Promise<Booking | null> {
 
 /**
  * Agendamentos do paciente, do mais antigo para o mais recente.
- * Sem patientId, devolve todos.
+ * Sem patientCPF, devolve todos.
  */
-export async function listBookings(patientId?: string): Promise<Booking[]> {
+export async function listBookings(patientCPF?: string): Promise<Booking[]> {
+    try {
+        fetchAndSyncBookings(patientCPF);
+    } catch (error) {
+        console.error("Erro ao sincronizar agendamentos do paciente:", error)
+    }
+    
     return BOOKINGS
-        .filter((booking) => patientId === undefined || booking.patientId === patientId)
+        .filter((booking) => patientCPF === undefined || booking.patientCPF === patientCPF)
         .map((booking) => ({ ...booking }))
         .sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`))
 }
 
 /** Agenda do profissional, ordenada por data e horário. */
-export async function listSpecialistBookings(specialistId: string): Promise<Booking[]> {
+export async function listSpecialistBookings(specialistCPF: string): Promise<Booking[]> {
+    try {
+        fetchAndSyncBookings(specialistCPF);
+    } catch (error) {
+        console.error("Erro ao sincronizar agendamentos do especialista:", error)
+    }
+    
     return BOOKINGS
-        .filter((booking) => booking.specialistId === specialistId)
+        .filter((booking) => booking.specialistCPF === specialistCPF)
         .map((booking) => ({ ...booking }))
         .sort((a, b) => `${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`))
 }
@@ -376,6 +421,19 @@ export async function updateBookingStatus(
 
     booking.status = status
 
+    try {
+        await fetch(`${process.env.EXPO_PUBLIC_APPT_API}/appointments/${id}`, {
+            method: 'PATCH',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status })
+        })
+    } catch (error) {
+        console.error("Erro ao atualizar status no servidor:", error)
+    }
+
     notify(booking)
 
     return { ...booking }
@@ -393,8 +451,8 @@ export async function acceptBooking(id: string): Promise<Booking> {
     }
 
     const conflict = findConflict({
-        patientId: booking.patientId,
-        specialistId: booking.specialistId,
+        patientCPF: booking.patientCPF,
+        specialistCPF: booking.specialistCPF,
         date: booking.date,
         time: booking.time,
         ignoreBookingId: booking.id,
@@ -415,4 +473,40 @@ export async function rejectBooking(id: string): Promise<Booking> {
     }
 
     return (await updateBookingStatus(id, "rejected"))!
+}
+
+export async function cancelBooking(id: string): Promise<Booking> {
+    const booking = BOOKINGS.find((item) => item.id === id)
+
+    if (!booking) {
+        throw new Error("Solicitação não encontrada")
+    }
+
+    return (await updateBookingStatus(id, "cancelled"))!
+}
+
+export async function fetchAndSyncBookings(patientCPF?: string, specialistCPF?: string): Promise<Booking[]> {
+    try {
+        let url = `${process.env.EXPO_PUBLIC_APPT_API}/appointments/getAll/`
+        if (patientCPF) url += patientCPF
+        if (specialistCPF) url += specialistCPF
+        
+        // console.log("A url enviada para fetch é: ", url)
+        const response = await fetch(url)
+        // console.log(response)
+        if (response.ok) {
+            const data: Booking[] = await response.json()
+            if (data != null) {
+                // Substitui ou mescla os dados no array em memória
+                BOOKINGS.length = 0 // limpa o array atual
+                BOOKINGS.push(...data) // insere os dados vindos do banco
+            }
+        }
+    } catch (error) {
+        console.error("Erro ao buscar agendamentos do servidor:", error)
+    }
+
+    if (patientCPF) return listBookings(patientCPF)
+    if (specialistCPF) return listBookings(specialistCPF)
+    else return []
 }

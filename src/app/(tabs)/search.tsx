@@ -21,13 +21,37 @@ export default function Search() {
     const [results, setResults] = useState<Specialist[] | null>(null)
     const [filters, setFilters] = useState<SpecialistFilters>(DEFAULT_FILTERS)
     const [filterOpen, setFilterOpen] = useState(false)
-    const userUF = getPatient().then(async (patient) => {return patient.address.state} )
+    const [userUF, setUserUF] = useState<string | null>(null);
 
     const activeFilters = countActiveFilters(filters)
 
     useEffect(() => {
-        let active = true 
+        let active = true;
+        
+        async function fetchPatientState() {
+            try {
+                const patient = await getPatient();
 
+                if (active) {
+                    setUserUF(patient.address.state);
+                }
+            } catch (error) {
+                console.error("Erro ao carregar paciente:", error);
+            }
+        }
+
+        fetchPatientState();
+
+        return () => {
+            active = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!userUF) return;
+
+        let active = true 
+        
         searchSpecialists(query, filters, String(userUF)).then((found) => {
             if (active) {
                 setResults(found)
@@ -37,7 +61,7 @@ export default function Search() {
         return () => {
             active = false
         }
-    }, [query, filters])
+    }, [query, filters, userUF])
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -83,7 +107,7 @@ export default function Search() {
                             <SpecialistCard
                                 key={specialist.cpf}
                                 specialist={specialist}
-                                onPress={() => router.push(`/specialist/${specialist.cpf}`)}
+                                onPress={() => router.push(`/specialist/[${specialist.cpf}]`)}
                             />
                         ))}
 

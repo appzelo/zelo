@@ -19,10 +19,9 @@ import {
 import {
     Booking,
     listBookings,
-    subscribeBookings,
 } from "../../services/bookings"
 import { Specialist, getSpecialist } from "../../services/specialists"
-import { Patient, getPatient, setPatient } from "../../services/patient"
+import { Patient, getPatient, setPatient, hasPatient } from "../../services/patient"
 import { BOOKING_STATUS } from "../../utils/constants/bookingStatus"
 import AppButton from "../../components/AppButton"
 import Avatar from "../../components/Avatar"
@@ -45,48 +44,84 @@ export default function Home() {
     const [hasMore, setHasMore] = useState(false)
     const [loaded, setLoaded] = useState(false)
 
-    const load = useCallback(() => {
-        let active = true
+    useFocusEffect(
+        useCallback(() => {
+            let active = true
 
-        setPatient(cpf);
+            async function load() {
+                try {
+                    setLoaded(false)
 
-        getPatient().then(async (currentPatient) => {
-            const bookings = await listBookings(currentPatient.cpf)
-            const today = dateKey(new Date())
+                    if (cpf) {
+                        await setPatient(cpf)
+                    }
+                    let currentPatient = null;
+                    try {
+                        currentPatient = await getPatient()
+                    } catch(error) { 
+                        if (!hasPatient()) {
+                            throw new Error("Nenhum usuário autenticado")
+                        }
+                    }
 
-            // Próxima consulta: pendente ou confirmada, a partir de hoje.
-            const upcoming = bookings.filter(
-                (booking) =>
-                    booking.date >= today
-                    && UPCOMING_STATUSES.includes(booking.status),
-            )
+                    if (!currentPatient || !currentPatient.cpf) {
+                        return
+                    }
 
-            const specialist = upcoming[0]
-                ? await getSpecialist(upcoming[0].specialistId)
-                : null
+                    const bookings = await listBookings(currentPatient.cpf)
 
-            if (!active) {
-                return
+                    const today = dateKey(new Date())
+
+                    const upcoming = bookings
+                        .filter(
+                            (booking) =>
+                                booking.date >= today &&
+                                UPCOMING_STATUSES.includes(booking.status),
+                        )
+                        .sort((a, b) => {
+                            const dateA = `${a.date} ${a.time}`
+                            const dateB = `${b.date} ${b.time}`
+
+                            return dateA.localeCompare(dateB)
+                        })
+
+                    const specialist = upcoming[0]
+                        ? await getSpecialist(upcoming[0].specialistCPF)
+                        : null
+
+                    if (!active) return
+
+                    setCurrentPatient(currentPatient)
+
+                    setNext(
+                        upcoming[0] && specialist
+                            ? { booking: upcoming[0], specialist }
+                            : null,
+                    )
+
+                    setHasMore(upcoming.length > 1)
+
+                    console.log("[HOME] CPF:", currentPatient.cpf)
+                    console.log("[HOME] Consultas retornadas:", bookings.length)
+                    console.log("[HOME] Consultas futuras:", upcoming.length)
+                    console.log("[HOME] Especialista:", specialist?.fullName)
+
+                } catch (error) {
+                    console.error("Erro ao carregar Home:", error)
+                } finally {
+                    if (active) {
+                        setLoaded(true)
+                    }
+                }
             }
+            
+            load()
 
-            setCurrentPatient(currentPatient)
-            setNext(
-                upcoming[0] && specialist
-                    ? { booking: upcoming[0], specialist }
-                    : null,
-            )
-            setHasMore(upcoming.length > 1)
-            setLoaded(true)
-        })
-
-        return () => {
-            active = false
-        }
-    }, [])
-
-    // Relê ao voltar para a aba e a cada mudança de status.
-    useFocusEffect(load)
-    useEffect(() => subscribeBookings(load), [load])
+            return () => {
+                active = false
+            }
+        }, [cpf])
+    )
 
     if (!loaded || !patient) {
         return (

@@ -105,6 +105,9 @@ export async function searchSpecialists(
 }
 
 export async function getSpecialist(cpf: string): Promise<Specialist | null> {
+    // console.log("Lista de especialistas: ", SPECIALISTS)
+    // console.log("CPF enviado para função: ", cpf)
+    cpf = cpf.replace("[", "").replace("]", "")
     return SPECIALISTS.find((specialist) => specialist.cpf === cpf) ?? null
 }
 
@@ -130,7 +133,7 @@ export async function getAvailability(id: string): Promise<string[]> {
 }
 
 async function fillSpecialistsList(userUF: string) {
-    await fetch(`${process.env.EXPO_PUBLIC_USER_API}/specialistUsers/${userUF}`, {
+    await fetch(`${process.env.EXPO_PUBLIC_USER_API}/specialistUsers/state/${userUF}`, {
         method: 'GET',
         headers: {
             Accept: 'application/json',

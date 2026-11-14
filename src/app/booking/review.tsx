@@ -67,7 +67,7 @@ export default function BookingReview() {
 
         let active = true
 
-        getConsent(patient.id).then((found) => {
+        getConsent(patient.cpf).then((found) => {
             if (active) {
                 setConsent(found)
             }
@@ -93,15 +93,16 @@ export default function BookingReview() {
 
         try {
             const booking = await createBooking({
-                specialistId: specialist.id,
-                patientId: patient.id,
+                specialistCPF: specialist.cpf,
+                patientCPF: patient.cpf,
                 date,
                 time,
                 needs: NEEDS,
+                address: patient.address
             })
 
             // O aceite só é registrado quando a solicitação é enviada.
-            await acceptConsent(patient.id)
+            await acceptConsent(patient.cpf)
 
             router.replace({
                 pathname: "/booking/sent",
@@ -128,7 +129,7 @@ export default function BookingReview() {
         router.push({
             pathname: "/terms/[patientId]",
             params: {
-                patientId: patient.id,
+                patientId: patient.cpf,
             },
         })
     }
@@ -167,7 +168,7 @@ export default function BookingReview() {
                                 <DetailRow
                                     icon="map-pin"
                                     label="Endereço de Atendimento"
-                                    value={patient.address}
+                                    value={`${patient.address.street}, ${patient.address.streetNumber} - ${patient.address.neighborhood}, ${patient.address.state}`}
                                     divider
                                 />
                                 <DetailRow
@@ -188,7 +189,7 @@ export default function BookingReview() {
 
                             <View style={styles.priceRow}>
                                 <Text style={styles.priceLabel}>
-                                    {`Taxa de Deslocamento (${specialist.distanceKm} km)`}
+                                    {`Taxa de Deslocamento (${specialist.maxDistance} km)`}
                                 </Text>
                                 <Text style={styles.priceValue}>{formatCurrency(totals.travelFee)}</Text>
                             </View>

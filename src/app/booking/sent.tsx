@@ -36,7 +36,7 @@ export default function BookingSent() {
             }
 
             const [foundSpecialist, currentPatient] = await Promise.all([
-                getSpecialist(found.specialistId),
+                getSpecialist(found.specialistCPF),
                 getPatient(),
             ])
 
@@ -82,9 +82,9 @@ export default function BookingSent() {
         {
             title: "Confirmação do Profissional",
             description: rejected
-                ? `${specialist?.name ?? "O profissional"} não pôde atender este horário.`
+                ? `${specialist?.fullName ?? "O profissional"} não pôde atender este horário.`
                 : specialist
-                    ? `${specialist.name} está revisando a rota e os detalhes médicos.`
+                    ? `${specialist.fullName} está revisando a rota e os detalhes médicos.`
                     : "O profissional está revisando a rota e os detalhes médicos.",
             state: rejected ? "rejected" : "current",
         },
@@ -135,12 +135,12 @@ export default function BookingSent() {
                             <Text style={styles.subtitle}>
                                 {rejected
                                     ? "Este horário não foi confirmado. Você pode buscar outro profissional."
-                                    : `Aguardando confirmação de ${specialist.name}. Você será notificado em instantes.`}
+                                    : `Aguardando confirmação de ${specialist.fullName}. Você será notificado em instantes.`}
                             </Text>
                         </View>
 
                         <View style={styles.summaryCard}>
-                            <SummaryRow label="Profissional:" value={specialist.name} />
+                            <SummaryRow label="Profissional:" value={specialist.fullName} />
                             <SummaryRow label="Paciente:" value={patient.name} />
                             <SummaryRow
                                 label="Data / Hora:"

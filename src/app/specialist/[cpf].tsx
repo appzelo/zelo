@@ -14,7 +14,7 @@ import Avatar from "../../components/Avatar"
 import Icon from "../../components/Icon"
 
 export default function SpecialistProfile() {
-    const { id } = useLocalSearchParams<{ id: string }>()
+    const { cpf } = useLocalSearchParams<{ cpf: string }>()
     const insets = useSafeAreaInsets()
     const days = useMemo(() => nextDays(5), [])
 
@@ -29,12 +29,12 @@ export default function SpecialistProfile() {
 
     useEffect(() => {
         let active = true
-
-        Promise.all([getSpecialist(id), getPatient()]).then(([found, currentPatient]) => {
+        console.log(cpf)
+        Promise.all([getSpecialist(cpf), getPatient()]).then(([found, currentPatient]) => {
             if (!active) {
                 return
             }
-
+            console.log(found)
             setSpecialist(found)
             setPatient(currentPatient)
             setLoaded(true)
@@ -43,7 +43,7 @@ export default function SpecialistProfile() {
         return () => {
             active = false
         }
-    }, [id])
+    }, [cpf])
 
     // Relê ao trocar de dia e ao voltar da revisão: o horário escolhido pode
     // ter sido ocupado enquanto a tela estava aberta.
@@ -57,7 +57,7 @@ export default function SpecialistProfile() {
         setDayLoading(true)
 
         Promise.all([
-            getDaySlots(id, selectedDay),
+            getDaySlots(cpf, selectedDay),
             getPatientDayBooking(patient.cpf, selectedDay),
         ]).then(([daySlots, found]) => {
             if (!active) {
@@ -83,7 +83,7 @@ export default function SpecialistProfile() {
         return () => {
             active = false
         }
-    }, [id, patient, selectedDay])
+    }, [cpf, patient, selectedDay])
 
     useEffect(() => loadDay(), [loadDay])
 

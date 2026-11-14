@@ -15,9 +15,9 @@ export type Patient = {
         neighborhood: string,
         city: string,
         state: string,
-        email: string,
-        phone: string,
-    }
+    },
+    email: string,
+    phone: string,
 }
 
 // Dados temporários até a integração com o backend.
@@ -53,9 +53,9 @@ const EXTRA_PATIENTS: Patient[] = [
             neighborhood: "Paraíso",
             city: "São Paulo",
             state: "SP",
-            email: "antonio.pereira@email.com",
-            phone: "(11) 97654-3210",
         },
+        email: "antonio.pereira@email.com",
+        phone: "(11) 97654-3210",
     },
     {
         cpf: "3",
@@ -70,9 +70,9 @@ const EXTRA_PATIENTS: Patient[] = [
             neighborhood: "Consolação",
             city: "São Paulo",
             state: "SP",
-            email: "helena.costa@email.com",
-            phone: "(11) 96543-2109",
         },
+        email: "helena.costa@email.com",
+        phone: "(11) 96543-2109",
     },
     {
         cpf: "4",
@@ -87,9 +87,9 @@ const EXTRA_PATIENTS: Patient[] = [
             neighborhood: "Liberdade",
             city: "São Paulo",
             state: "SP",
-            email: "jose.almeida@email.com",
-            phone: "(11) 95432-1098",
         },
+        email: "jose.almeida@email.com",
+        phone: "(11) 95432-1098",
     },
     {
         cpf: "5",
@@ -104,14 +104,13 @@ const EXTRA_PATIENTS: Patient[] = [
             neighborhood: "Jardins",
             city: "São Paulo",
             state: "SP",
-            email: "lucia.fernandes@email.com",
-            phone: "(11) 94321-0987",
         },
+        email: "lucia.fernandes@email.com",
+        phone: "(11) 94321-0987",
     },
 ]
 
 export async function setPatient(cpf: string): Promise<void> {
-    // const PATIENT: Patient = 
     const response = await fetch(`${process.env.EXPO_PUBLIC_USER_API}/commonUsers/${cpf}`, {
         method: 'GET',
         headers: {
@@ -119,16 +118,26 @@ export async function setPatient(cpf: string): Promise<void> {
             'Content-Type': 'application/json',
         }
     })
+
     const responseJson: Patient = await response.json()
+
+    console.log("Resposta da API:", responseJson)
+    console.log("Full name recebido:", responseJson.fullName)
 
     patient = responseJson;
     patient.name = formatShortName(patient.fullName);
+    // console.log("PACIENTE ARMZENADO: ", patient)
 }
 
 // Mantido em memória para que as edições do perfil valham durante a sessão.
 let patient: Patient;
 
+export function hasPatient(): boolean {
+    return !!patient;
+}
+
 export async function getPatient(): Promise<Patient> {
+    // console.log("PACIENTE RECUPERADO: ", patient)
     return patient
 }
 
