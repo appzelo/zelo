@@ -50,7 +50,7 @@ export function applyMask(value: string, mask: InputMask): string {
             const prefix = number.slice(0, prefixLength)
             const suffix = number.slice(prefixLength)
 
-            return `(${areaCode}) ${prefix}${suffix ? `-${suffix}` : ""}`
+            return `(${areaCode})${prefix}${suffix ? `-${suffix}` : ""}`
         }
 
         case "cep": {
