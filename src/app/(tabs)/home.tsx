@@ -7,7 +7,7 @@ import {
     ActivityIndicator,
     StyleSheet,
 } from "react-native"
-import { router, useFocusEffect } from "expo-router"
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { colors } from "../../utils/constants/colors"
 import {
@@ -19,10 +19,9 @@ import {
 import {
     Booking,
     listBookings,
-    subscribeBookings,
 } from "../../services/bookings"
 import { Specialist, getSpecialist } from "../../services/specialists"
-import { Patient, getPatient } from "../../services/patient"
+import { Patient, getPatient, setPatient, hasPatient } from "../../services/patient"
 import { BOOKING_STATUS } from "../../utils/constants/bookingStatus"
 import AppButton from "../../components/AppButton"
 import Avatar from "../../components/Avatar"
@@ -39,51 +38,90 @@ type NextConsult = {
 export default function Home() {
     const insets = useSafeAreaInsets()
 
-    const [patient, setPatient] = useState<Patient | null>(null)
+    const { cpf } = useLocalSearchParams<{ cpf: string; }>();
+    const [patient, setCurrentPatient] = useState<Patient | null>(null)
     const [next, setNext] = useState<NextConsult | null>(null)
     const [hasMore, setHasMore] = useState(false)
     const [loaded, setLoaded] = useState(false)
 
-    const load = useCallback(() => {
-        let active = true
+    useFocusEffect(
+        useCallback(() => {
+            let active = true
 
-        getPatient().then(async (currentPatient) => {
-            const bookings = await listBookings(currentPatient.id)
-            const today = dateKey(new Date())
+            async function load() {
+                try {
+                    setLoaded(false)
 
-            // Próxima consulta: pendente ou confirmada, a partir de hoje.
-            const upcoming = bookings.filter(
-                (booking) =>
-                    booking.date >= today
-                    && UPCOMING_STATUSES.includes(booking.status),
-            )
+                    if (cpf) {
+                        await setPatient(cpf)
+                    }
+                    let currentPatient = null;
+                    try {
+                        currentPatient = await getPatient()
+                    } catch(error) { 
+                        if (!hasPatient()) {
+                            throw new Error("Nenhum usuário autenticado")
+                        }
+                    }
 
-            const specialist = upcoming[0]
-                ? await getSpecialist(upcoming[0].specialistId)
-                : null
+                    if (!currentPatient || !currentPatient.cpf) {
+                        return
+                    }
 
-            if (!active) {
-                return
+                    const bookings = await listBookings(currentPatient.cpf)
+
+                    const today = dateKey(new Date())
+
+                    const upcoming = bookings
+                        .filter(
+                            (booking) =>
+                                booking.date >= today &&
+                                UPCOMING_STATUSES.includes(booking.status),
+                        )
+                        .sort((a, b) => {
+                            const dateA = `${a.date} ${a.time}`
+                            const dateB = `${b.date} ${b.time}`
+
+                            return dateA.localeCompare(dateB)
+                        })
+
+                    const specialist = upcoming[0]
+                        ? await getSpecialist(upcoming[0].specialistCPF)
+                        : null
+
+                    if (!active) return
+
+                    setCurrentPatient(currentPatient)
+
+                    setNext(
+                        upcoming[0] && specialist
+                            ? { booking: upcoming[0], specialist }
+                            : null,
+                    )
+
+                    setHasMore(upcoming.length > 1)
+
+                    console.log("[HOME] CPF:", currentPatient.cpf)
+                    console.log("[HOME] Consultas retornadas:", bookings.length)
+                    console.log("[HOME] Consultas futuras:", upcoming.length)
+                    console.log("[HOME] Especialista:", specialist?.fullName)
+
+                } catch (error) {
+                    console.error("Erro ao carregar Home:", error)
+                } finally {
+                    if (active) {
+                        setLoaded(true)
+                    }
+                }
             }
+            
+            load()
 
-            setPatient(currentPatient)
-            setNext(
-                upcoming[0] && specialist
-                    ? { booking: upcoming[0], specialist }
-                    : null,
-            )
-            setHasMore(upcoming.length > 1)
-            setLoaded(true)
-        })
-
-        return () => {
-            active = false
-        }
-    }, [])
-
-    // Relê ao voltar para a aba e a cada mudança de status.
-    useFocusEffect(load)
-    useEffect(() => subscribeBookings(load), [load])
+            return () => {
+                active = false
+            }
+        }, [cpf])
+    )
 
     if (!loaded || !patient) {
         return (
@@ -106,7 +144,7 @@ export default function Home() {
             >
                 <LocationHeader
                     patientName={patient.name}
-                    address={`${patient.street}, ${patient.streetNumber}`}
+                    address={`${patient.address.street}, ${patient.address.streetNumber}`}
                     onSettings={() => router.push("/settings")}
                 />
 
@@ -184,7 +222,7 @@ function NextConsultCard({ consult }: { consult: NextConsult }) {
             style={({ pressed }) => [styles.nextCard, pressed && styles.cardPressed]}
             onPress={handlePress}
             accessibilityRole="button"
-            accessibilityLabel={`Próxima consulta com ${specialist.name}`}
+            accessibilityLabel={`Próxima consulta com ${specialist.fullName}`}
         >
             <View style={styles.nextTop}>
                 <View style={styles.dateRow}>
@@ -201,7 +239,7 @@ function NextConsultCard({ consult }: { consult: NextConsult }) {
                 <Avatar size={44} />
 
                 <View style={styles.specialistInfo}>
-                    <Text style={styles.specialistName}>{specialist.name}</Text>
+                    <Text style={styles.specialistName}>{specialist.fullName}</Text>
                     <Text style={styles.specialistMeta} numberOfLines={1}>
                         {`${specialist.specialty} • ${formatDurationLong(booking.durationMinutes)}`}
                     </Text>

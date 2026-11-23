@@ -9,36 +9,59 @@ import { useForm, FormProvider } from "react-hook-form"
 export default function patientRegister() {
     type PatientRegisterForm = {
         fullName: string,
-        password: string,
+        pass: string,
         cpf: string,
         birthDate: string,
         email: string,
         phone: string,
-        zipCode: string,
-        street: string,
-        streetNumber: string,
-        city: string,
-        state: string,
+        address: {
+            zipcode: string,
+            street: string,
+            streetNumber: string,
+            neighborhood: string,
+            city: string,
+            state: string,
+        }
     }
 
     const form = useForm<PatientRegisterForm>({
         defaultValues: {
             fullName: "",
-            password: "",
+            pass: "",
             cpf: "",
             birthDate: "",
             email: "",
             phone: "",
-            zipCode: "",
-            street: "",
-            streetNumber: "",
-            city: "",
-            state: "",
+            address: {                
+                zipcode: "",
+                street: "",
+                streetNumber: "",
+                neighborhood: "",
+                city: "",
+                state: "",
+            }
         }
     })
 
-    const onSubmit = (data: PatientRegisterForm) => {
-        console.log(data)
+    const onSubmit = async (data: PatientRegisterForm) => {
+        console.log(data);
+        
+        // ===== Formatting fields to fit to DB specifications =====
+        const interDate = data.birthDate.replaceAll("/", "-");
+        const reverseDate = interDate.split("-").reverse().join("-");
+        data.birthDate = reverseDate;
+
+        await fetch(`${process.env.EXPO_PUBLIC_USER_API}/commonUsers`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(async response => {
+            console.log(await response.text());
+        })
     }
 
     return(
@@ -93,7 +116,7 @@ export default function patientRegister() {
                             ></AppInput>
                         </View>
                         <AppInput 
-                            name="password"
+                            name="pass"
                             showLabel
                             label="Senha" 
                             placeholder="Digite sua senha" 
@@ -127,7 +150,7 @@ export default function patientRegister() {
                             titleStyle={{fontSize: 18}}
                         ></SectionText>
                         <AppInput
-                            name="zipCode"
+                            name="address.zipcode"
                             showLabel
                             label="CEP" 
                             placeholder="00000-000"
@@ -137,14 +160,14 @@ export default function patientRegister() {
                         ></AppInput>
                         <View style={styles.row}>
                             <AppInput
-                                name="street"
+                                name="address.street"
                                 showLabel
                                 label="Rua/Avenida" 
                                 containerStyle={{flex: 2}}
                                 required
                             ></AppInput>
                             <AppInput
-                                name="streetNumber"
+                                name="address.streetNumber"
                                 showLabel
                                 label="Nº" 
                                 containerStyle={{flex: 1}}
@@ -153,21 +176,21 @@ export default function patientRegister() {
                             ></AppInput>
                         </View>
                         <AppInput
-                            name="neighborhood"
+                            name="address.neighborhood"
                             showLabel
                             label="Bairro" 
                             required
                         ></AppInput>
                         <View style={styles.row}>
                             <AppInput
-                                name="city"
+                                name="address.city"
                                 showLabel
                                 label="Cidade" 
                                 containerStyle={{flex: 3}}
                                 required
                             ></AppInput>
                             <AppInput
-                                name="state"
+                                name="address.state"
                                 showLabel
                                 label="UF" 
                                 containerStyle={{flex: 1}}

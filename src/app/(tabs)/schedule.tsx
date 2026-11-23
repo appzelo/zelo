@@ -37,10 +37,10 @@ export default function Schedule() {
         let active = true
 
         getPatient()
-            .then((patient) => listBookings(patient.id))
+            .then((patient) => listBookings(patient.cpf))
             .then(async (found) => {
                 const specialists = await Promise.all(
-                    found.map((booking) => getSpecialist(booking.specialistId)),
+                    found.map((booking) => getSpecialist(booking.specialistCPF)),
                 )
 
                 if (!active) {
@@ -182,7 +182,7 @@ function ScheduleCard({ booking, specialist }: ScheduleCardProps) {
                 <Avatar size={42} />
 
                 <View style={styles.cardInfo}>
-                    <Text style={styles.name}>{specialist.name}</Text>
+                    <Text style={styles.name}>{specialist.fullName}</Text>
                     <Text style={styles.specialty}>{specialist.specialty}</Text>
                 </View>
             </View>
