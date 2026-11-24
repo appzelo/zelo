@@ -19,23 +19,23 @@ import { useForm, FormProvider } from "react-hook-form"
 
 const MIN_DISTANCE_KM = 2
 
-type SpecialistRegisterForm = {
-    fullName: string,
-    password: string,
-    confirmPassword: string,
-    cpf: string,
-    email: string,
-    phone: string,
-    professionalLicense: string,
-    licenseState: string,
-    primarySpecialty: string,
-    maxDistance: number,
-}
-
 export default function SpecialistRegister() {
     const insets = useSafeAreaInsets()
 
     const [submitted, setSubmitted] = useState(false)
+
+    type SpecialistRegisterForm = {
+        fullName: string,
+        password: string,
+        confirmPassword: string,
+        cpf: string,
+        email: string,
+        phone: string
+        professionalLicense: string,
+        licenseState: string,
+        primarySpecialty: string, 
+        maxDistance: number,
+    }
 
     const form = useForm<SpecialistRegisterForm>({
         mode: "onTouched",
@@ -53,9 +53,22 @@ export default function SpecialistRegister() {
         }
     })
 
-    function onSubmit() {
-        // O cadastro será enviado ao backend. Por enquanto, simulamos o sucesso.
-        setSubmitted(true)
+    const onSubmit = async (data: SpecialistRegisterForm) => {
+        console.log(data)
+        await fetch(`${process.env.EXPO_PUBLIC_USER_API}/specialistUsers`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(async response => {
+            console.log(await response.text());
+            if (await response.status === 201) {
+                setSubmitted(true);
+            }
+        })
     }
 
     if (submitted) {

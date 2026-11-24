@@ -18,49 +18,73 @@ import {
 } from "../../utils/validation"
 import { useForm, FormProvider } from "react-hook-form"
 
-type PatientRegisterForm = {
-    fullName: string,
-    password: string,
-    confirmPassword: string,
-    cpf: string,
-    birthDate: string,
-    email: string,
-    phone: string,
-    zipCode: string,
-    street: string,
-    streetNumber: string,
-    neighborhood: string,
-    city: string,
-    state: string,
-}
-
-export default function PatientRegister() {
-    const insets = useSafeAreaInsets()
-
-    const [submitted, setSubmitted] = useState(false)
+export default function patientRegister() {
+    type PatientRegisterForm = {
+        fullName: string,
+        pass: string,
+        confirmPassword: string,
+        cpf: string,
+        birthDate: string,
+        email: string,
+        phone: string,
+        address: {
+            zipcode: string,
+            street: string,
+            streetNumber: string,
+            neighborhood: string,
+            city: string,
+            state: string,
+        }
+    }
 
     const form = useForm<PatientRegisterForm>({
         mode: "onTouched",
         defaultValues: {
             fullName: "",
-            password: "",
+            pass: "",
             confirmPassword: "",
             cpf: "",
             birthDate: "",
             email: "",
             phone: "",
-            zipCode: "",
-            street: "",
-            streetNumber: "",
-            neighborhood: "",
-            city: "",
-            state: "",
+            address: {                
+                zipcode: "",
+                street: "",
+                streetNumber: "",
+                neighborhood: "",
+                city: "",
+                state: "",
+            }
         }
     })
 
-    function onSubmit() {
-        // O cadastro será enviado ao backend. Por enquanto, simulamos o sucesso.
-        setSubmitted(true)
+    const insets = useSafeAreaInsets()
+
+    const [submitted, setSubmitted] = useState(false)
+
+
+    const onSubmit = async (data: PatientRegisterForm) => {
+        console.log(data);
+        
+        // ===== Formatting fields to fit to DB specifications =====
+        const interDate = data.birthDate.replaceAll("/", "-");
+        const reverseDate = interDate.split("-").reverse().join("-");
+        data.birthDate = reverseDate;
+
+        await fetch(`${process.env.EXPO_PUBLIC_USER_API}/commonUsers`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+        .then(async response => {
+            console.log(await response.text());
+            if (await response.status === 201) {
+                setSubmitted(true);
+            }
+        })
     }
 
     if (submitted) {
@@ -146,7 +170,7 @@ export default function PatientRegister() {
                             ></AppInput>
                         </View>
                         <AppInput 
-                            name="password"
+                            name="pass"
                             showLabel
                             label="Senha" 
                             placeholder="Digite sua senha" 
@@ -167,7 +191,7 @@ export default function PatientRegister() {
                             placeholder="Repita a senha" 
                             secureTextEntry={true}
                             rules={{
-                                validate: (value, values) => value === values.password
+                                validate: (value, values) => value === values.pass
                                     || "As senhas não coincidem.",
                             }}
                             required
@@ -208,7 +232,7 @@ export default function PatientRegister() {
                             titleStyle={{fontSize: 18}}
                         ></SectionText>
                         <AppInput
-                            name="zipCode"
+                            name="address.zipcode"
                             showLabel
                             label="CEP" 
                             placeholder="00000-000"
@@ -222,7 +246,7 @@ export default function PatientRegister() {
                         ></AppInput>
                         <View style={styles.row}>
                             <AppInput
-                                name="street"
+                                name="address.street"
                                 showLabel
                                 label="Rua/Avenida" 
                                 containerStyle={{flex: 2}}
@@ -231,7 +255,7 @@ export default function PatientRegister() {
                                 required
                             ></AppInput>
                             <AppInput
-                                name="streetNumber"
+                                name="address.streetNumber"
                                 showLabel
                                 label="Nº" 
                                 containerStyle={{flex: 1}}
@@ -241,7 +265,7 @@ export default function PatientRegister() {
                             ></AppInput>
                         </View>
                         <AppInput
-                            name="neighborhood"
+                            name="address.neighborhood"
                             showLabel
                             label="Bairro" 
                             autoCapitalize="words"
@@ -250,7 +274,7 @@ export default function PatientRegister() {
                         ></AppInput>
                         <View style={styles.row}>
                             <AppInput
-                                name="city"
+                                name="address.city"
                                 showLabel
                                 label="Cidade" 
                                 containerStyle={{flex: 3}}
@@ -259,7 +283,7 @@ export default function PatientRegister() {
                                 required
                             ></AppInput>
                             <AppInput
-                                name="state"
+                                name="address.state"
                                 showLabel
                                 label="UF" 
                                 containerStyle={{flex: 1}}

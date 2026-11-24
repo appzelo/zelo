@@ -21,7 +21,7 @@ export default function SpecialistCard({
                 <Avatar size={46} />
 
                 <View style={styles.info}>
-                    <Text style={styles.name}>{specialist.name}</Text>
+                    <Text style={styles.name}>{specialist.fullName}</Text>
                     <Text style={styles.specialty}>{specialist.specialty}</Text>
                 </View>
 
@@ -43,7 +43,7 @@ export default function SpecialistCard({
             <View style={styles.bottom}>
                 <Text style={styles.star}>★</Text>
                 <Text style={styles.rating}>{specialist.rating.toFixed(1)}</Text>
-                <Text style={styles.distance}>{specialist.distanceKm} km de distância</Text>
+                <Text style={styles.distance}>{specialist.distanceToUser} km de distância</Text>
 
                 <View style={styles.priceBox}>
                     <Text style={styles.price}>R$ {specialist.pricePerHour}</Text>

@@ -14,7 +14,7 @@ import Avatar from "../../components/Avatar"
 import Icon from "../../components/Icon"
 
 export default function SpecialistProfile() {
-    const { id } = useLocalSearchParams<{ id: string }>()
+    const { cpf } = useLocalSearchParams<{ cpf: string }>()
     const insets = useSafeAreaInsets()
     const days = useMemo(() => nextDays(5), [])
 
@@ -29,12 +29,12 @@ export default function SpecialistProfile() {
 
     useEffect(() => {
         let active = true
-
-        Promise.all([getSpecialist(id), getPatient()]).then(([found, currentPatient]) => {
+        console.log(cpf)
+        Promise.all([getSpecialist(cpf), getPatient()]).then(([found, currentPatient]) => {
             if (!active) {
                 return
             }
-
+            console.log(found)
             setSpecialist(found)
             setPatient(currentPatient)
             setLoaded(true)
@@ -43,7 +43,7 @@ export default function SpecialistProfile() {
         return () => {
             active = false
         }
-    }, [id])
+    }, [cpf])
 
     // Relê ao trocar de dia e ao voltar da revisão: o horário escolhido pode
     // ter sido ocupado enquanto a tela estava aberta.
@@ -57,8 +57,8 @@ export default function SpecialistProfile() {
         setDayLoading(true)
 
         Promise.all([
-            getDaySlots(id, selectedDay),
-            getPatientDayBooking(patient.id, selectedDay),
+            getDaySlots(cpf, selectedDay),
+            getPatientDayBooking(patient.cpf, selectedDay),
         ]).then(([daySlots, found]) => {
             if (!active) {
                 return
@@ -83,7 +83,7 @@ export default function SpecialistProfile() {
         return () => {
             active = false
         }
-    }, [id, patient, selectedDay])
+    }, [cpf, patient, selectedDay])
 
     useEffect(() => loadDay(), [loadDay])
 
@@ -97,7 +97,7 @@ export default function SpecialistProfile() {
         router.push({
             pathname: "/booking/review",
             params: {
-                specialistId: specialist.id,
+                specialistId: specialist.cpf,
                 date: selectedDay,
                 time: selectedTime,
             },
@@ -130,30 +130,30 @@ export default function SpecialistProfile() {
                             <Avatar size={60} />
 
                             <View style={styles.profileInfo}>
-                                <Text style={styles.name}>{specialist.name}</Text>
+                                <Text style={styles.name}>{specialist.fullName}</Text>
                                 <Text style={styles.specialty}>{specialist.specialty}</Text>
 
                                 <View style={styles.licenseRow}>
                                     <Text style={styles.license} numberOfLines={1}>
-                                        {specialist.license}
+                                        {specialist.professionalID}
                                     </Text>
                                     <Text style={styles.star}>★</Text>
                                     <Text style={styles.rating}>{specialist.rating.toFixed(1)}</Text>
-                                    <Text style={styles.reviews} numberOfLines={1}>
+                                    {/* <Text style={styles.reviews} numberOfLines={1}>
                                         {`(${specialist.reviews} avaliações)`}
-                                    </Text>
+                                    </Text> */}
                                 </View>
                             </View>
                         </View>
 
                         <View style={styles.tiles}>
-                            <InfoTile label="Distância" value={`${specialist.distanceKm} km`} />
+                            <InfoTile label="Distância" value={`${specialist.distanceToUser} km`} />
                             <InfoTile
                                 label="Valor Hora"
                                 value={formatCurrency(specialist.pricePerHour)}
                                 highlight
                             />
-                            <InfoTile label="Atuação" value={`Até ${specialist.maxDistanceKm}km`} />
+                            <InfoTile label="Atuação" value={`Até ${specialist.maxDistance}km`} />
                         </View>
 
                         <View style={styles.section}>

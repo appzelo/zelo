@@ -7,22 +7,69 @@ import { useForm, FormProvider } from "react-hook-form"
 
 export default function Login() {
     type LoginForm = {
-        identity: string,
-        password: string,
+        cpf: string,
+        senha: string,
     }
 
     const form = useForm<LoginForm>({
         defaultValues: {
-            identity: "",
-            password: "",
+            cpf: "",
+            senha: "",
         }
     })
 
-    const onSubmit = (data: LoginForm) => {
-        console.log(data)
+    const onSubmit = async (data: LoginForm) => {
+        let [commonLoginPassed, specialistLoginPassed] = [false, false];
+        
+        await fetch(`${process.env.EXPO_PUBLIC_USER_API}/commonUsers/login`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(async response => {
+            const responseJson = await response.json();
+            if (responseJson) {
+                commonLoginPassed = true;
+            }
+        })
 
-        // Entrar leva para a home e remove o login do histórico.
-        router.replace("/home")
+        if (!commonLoginPassed) {
+            await fetch(`${process.env.EXPO_PUBLIC_USER_API}/specialistUsers/login`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(async response => {
+                const responseJson = await response.json();
+                if (responseJson) {
+                    specialistLoginPassed = true;
+                }
+            })
+        }
+
+        if (commonLoginPassed) {
+            // Entrar leva para a home e remove o login do histórico.
+            router.replace({
+                pathname: "/home",
+                params: {
+                    cpf: data.cpf
+                }
+            });
+        } else if (specialistLoginPassed) {
+            router.replace({
+                pathname: "/pro/home",
+                params: {
+                    cpf: data.cpf
+                }
+            });
+        } else {
+            console.log("USUÁRIO NÃO ENCONTRADO")
+        }
     }
 
     return (
@@ -38,7 +85,7 @@ export default function Login() {
                     <FormProvider {...form}>
                         <View style={styles.form}>
                             <AppInput 
-                                name="identity"
+                                name="cpf"
                                 showLabel
                                 label="CPF"
                                 placeholder="Digite seu CPF"
@@ -47,7 +94,7 @@ export default function Login() {
                             ></AppInput>
                             <View style={styles.passwordGroup}>
                                 <AppInput 
-                                    name="password"
+                                    name="senha"
                                     showLabel
                                     label="Senha" 
                                     placeholder="Digite sua senha" 

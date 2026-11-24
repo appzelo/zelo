@@ -34,6 +34,7 @@ export default function ResetPassword() {
     const [error, setError] = useState<string | null>(null)
     const [done, setDone] = useState(false)
 
+    // provavelmente vai precisar mudar os nomes para português
     const form = useForm<ResetForm>({
         defaultValues: {
             password: "",
