@@ -26,14 +26,14 @@ export default function SpecialistRegister() {
 
     type SpecialistRegisterForm = {
         fullName: string,
-        password: string,
+        pass: string,
         confirmPassword: string,
         cpf: string,
         email: string,
         phone: string
-        professionalLicense: string,
-        licenseState: string,
-        primarySpecialty: string, 
+        professionalID: string,
+        state: string,
+        specialty: string, 
         maxDistance: number,
     }
 
@@ -41,14 +41,14 @@ export default function SpecialistRegister() {
         mode: "onTouched",
         defaultValues: {
             fullName: "",
-            password: "",
+            pass: "",
             confirmPassword: "",
             cpf: "",
             email: "",
             phone: "",
-            professionalLicense: "",
-            licenseState: "",
-            primarySpecialty: "",
+            professionalID: "",
+            state: "",
+            specialty: "",
             maxDistance: MIN_DISTANCE_KM,
         }
     })
@@ -137,7 +137,7 @@ export default function SpecialistRegister() {
                             required
                         ></AppInput>
                         <AppInput 
-                            name="password"
+                            name="pass"
                             showLabel
                             label="Senha" 
                             placeholder="Digite sua senha" 
@@ -158,7 +158,7 @@ export default function SpecialistRegister() {
                             placeholder="Repita a senha" 
                             secureTextEntry={true}
                             rules={{
-                                validate: (value, values) => value === values.password
+                                validate: (value, values) => value === values.pass
                                     || "As senhas não coincidem.",
                             }}
                             required
@@ -197,7 +197,7 @@ export default function SpecialistRegister() {
 
                         <View style={styles.row}>
                             <AppInput 
-                                name="professionalLicense"
+                                name="professionalID"
                                 showLabel
                                 label="Registro (CRM/COREN)" 
                                 containerStyle={{flex: 3}}
@@ -212,7 +212,7 @@ export default function SpecialistRegister() {
                                 required
                             ></AppInput>
                             <AppInput 
-                                name="licenseState"
+                                name="state"
                                 showLabel
                                 label="UF" 
                                 containerStyle={{flex: 1}}
@@ -226,7 +226,7 @@ export default function SpecialistRegister() {
                             ></AppInput>
                         </View>
                         <AppInput 
-                            name="primarySpecialty"
+                            name="specialty"
                             showLabel
                             label="Especialidade Principal" 
                             containerStyle={{flex: 3}}
