@@ -22,6 +22,8 @@ export default function Search() {
     const [filters, setFilters] = useState<SpecialistFilters>(DEFAULT_FILTERS)
     const [filterOpen, setFilterOpen] = useState(false)
     const [userUF, setUserUF] = useState<string | null>(null);
+    const [userLat, setUserLat] = useState<number | null>(null);
+    const [userLng, setUserLng] = useState<number | null>(null);
 
     const activeFilters = countActiveFilters(filters)
 
@@ -34,6 +36,8 @@ export default function Search() {
 
                 if (active) {
                     setUserUF(patient.address.state);
+                    setUserLat(patient.address.lat);
+                    setUserLng(patient.address.long);
                 }
             } catch (error) {
                 console.error("Erro ao carregar paciente:", error);
@@ -52,7 +56,7 @@ export default function Search() {
 
         let active = true 
         
-        searchSpecialists(query, filters, String(userUF)).then((found) => {
+        searchSpecialists(query, filters, String(userUF), Number(userLat), Number(userLng)).then((found) => {
             if (active) {
                 setResults(found)
             }
