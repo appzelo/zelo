@@ -15,6 +15,8 @@ export type Patient = {
         neighborhood: string,
         city: string,
         state: string,
+        lat: number,
+        long: number
     },
     email: string,
     phone: string,
@@ -53,6 +55,8 @@ const EXTRA_PATIENTS: Patient[] = [
             neighborhood: "Paraíso",
             city: "São Paulo",
             state: "SP",
+            lat: 10,
+            long: 10
         },
         email: "antonio.pereira@email.com",
         phone: "(11) 97654-3210",
@@ -70,6 +74,8 @@ const EXTRA_PATIENTS: Patient[] = [
             neighborhood: "Consolação",
             city: "São Paulo",
             state: "SP",
+            lat: 10,
+            long: 10
         },
         email: "helena.costa@email.com",
         phone: "(11) 96543-2109",
@@ -87,6 +93,8 @@ const EXTRA_PATIENTS: Patient[] = [
             neighborhood: "Liberdade",
             city: "São Paulo",
             state: "SP",
+            lat: 10,
+            long: 10
         },
         email: "jose.almeida@email.com",
         phone: "(11) 95432-1098",
@@ -104,6 +112,8 @@ const EXTRA_PATIENTS: Patient[] = [
             neighborhood: "Jardins",
             city: "São Paulo",
             state: "SP",
+            lat: 10,
+            long: 10
         },
         email: "lucia.fernandes@email.com",
         phone: "(11) 94321-0987",

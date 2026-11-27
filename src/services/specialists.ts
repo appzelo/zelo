@@ -82,8 +82,10 @@ export async function searchSpecialists(
     query: string,
     filters: SpecialistFilters = DEFAULT_FILTERS,
     userUF: string,
+    userLat: number,
+    userLng: number
 ): Promise<Specialist[]> {
-    await fillSpecialistsList(userUF);
+    await fillSpecialistsList(userUF, userLat, userLng);
 
     const term = query.trim().toLowerCase()
 
@@ -132,8 +134,8 @@ export async function getAvailability(id: string): Promise<string[]> {
     return specialist ? AVAILABLE_SLOTS : []
 }
 
-async function fillSpecialistsList(userUF: string) {
-    await fetch(`${process.env.EXPO_PUBLIC_USER_API}/specialistUsers/state/${userUF}`, {
+async function fillSpecialistsList(userUF: string, userLat:number, userLng: number) {
+    await fetch(`${process.env.EXPO_PUBLIC_USER_API}/specialistUsers/state/${userUF}/${userLat}/${userLng}`, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
