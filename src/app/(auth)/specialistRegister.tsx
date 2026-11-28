@@ -10,6 +10,7 @@ import RegistrationSuccess from "../../components/RegistrationSuccess"
 import { useState } from "react"
 import {
     MIN_PASSWORD_LENGTH,
+    isValidCEP,
     isValidCPF,
     isValidEmail,
     isValidPhone,
@@ -35,6 +36,14 @@ export default function SpecialistRegister() {
         state: string,
         specialty: string, 
         maxDistance: number,
+        address: {
+            zipcode: string,
+            street: string,
+            streetNumber: string,
+            neighborhood: string,
+            city: string,
+            state: string,
+        }
     }
 
     const form = useForm<SpecialistRegisterForm>({
@@ -50,6 +59,14 @@ export default function SpecialistRegister() {
             state: "",
             specialty: "",
             maxDistance: MIN_DISTANCE_KM,
+            address: {
+                zipcode: "",
+                street: "",
+                streetNumber: "",
+                neighborhood: "",
+                city: "",
+                state: "",
+            }
         }
     })
 
@@ -240,6 +257,78 @@ export default function SpecialistRegister() {
                             }}
                             required
                         ></AppInput>
+                        <SectionText 
+                            title="Endereço Base" 
+                            showDescription={true}
+                            description="Usamos este endereço para calcular a distância até os pacientes."
+                            titleStyle={{fontSize: 18}}
+                        ></SectionText>
+                        <AppInput
+                            name="address.zipcode"
+                            showLabel
+                            label="CEP" 
+                            placeholder="00000-000"
+                            keyboardType="number-pad"
+                            mask="cep"
+                            rules={{
+                                validate: (value) => isValidCEP(value)
+                                    || "Informe um CEP válido.",
+                            }}
+                            required
+                        ></AppInput>
+                        <View style={styles.row}>
+                            <AppInput
+                                name="address.street"
+                                showLabel
+                                label="Rua/Avenida" 
+                                containerStyle={{flex: 2}}
+                                autoCapitalize="words"
+                                rules={{ required: "Informe a rua/avenida." }}
+                                required
+                            ></AppInput>
+                            <AppInput
+                                name="address.streetNumber"
+                                showLabel
+                                label="Nº" 
+                                containerStyle={{flex: 1}}
+                                keyboardType="number-pad"
+                                rules={{ required: "Informe o número." }}
+                                required
+                            ></AppInput>
+                        </View>
+                        <AppInput
+                            name="address.neighborhood"
+                            showLabel
+                            label="Bairro" 
+                            autoCapitalize="words"
+                            rules={{ required: "Informe o bairro." }}
+                            required
+                        ></AppInput>
+                        <View style={styles.row}>
+                            <AppInput
+                                name="address.city"
+                                showLabel
+                                label="Cidade" 
+                                containerStyle={{flex: 3}}
+                                autoCapitalize="words"
+                                rules={{ required: "Informe a cidade." }}
+                                required
+                            ></AppInput>
+                            <AppInput
+                                name="address.state"
+                                showLabel
+                                label="UF" 
+                                containerStyle={{flex: 1}}
+                                mask="uf"
+                                autoCapitalize="characters"
+                                rules={{
+                                    validate: (value) => isValidUF(value)
+                                        || "UF inválida.",
+                                }}
+                                required
+                            ></AppInput>
+                        </View>
+
                         <AppSlider 
                             name="maxDistance"
                             title="Distância Máxima de Atendimento" 

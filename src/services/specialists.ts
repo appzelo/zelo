@@ -1,3 +1,12 @@
+export type SpecialistAddress = {
+    zipcode: string,
+    street: string,
+    streetNumber: string,
+    neighborhood: string,
+    city: string,
+    state: string,
+}
+
 export type Specialist = {
     cpf: string,
     fullName: string,
@@ -13,12 +22,14 @@ export type Specialist = {
     maxDistance: number,
     paymentMethods: string[],
     availableToday: boolean,
+    /** Endereço base do profissional, usado para calcular a distância. */
+    address: SpecialistAddress,
 }
 
 /** Campos editáveis na tela de perfil do especialista. */
 export type SpecialistProfileInput = Pick<
     Specialist,
-    "fullName" | "specialty" | "professionalID" | "email" | "phone"
+    "fullName" | "specialty" | "professionalID" | "email" | "phone" | "address"
 >
 
 // Dados temporários até a integração com o backend.
@@ -142,6 +153,26 @@ async function fillSpecialistsList(userUF: string) {
     })
     .then(async response => {
         const responseJson = await response.json();
-        SPECIALISTS = responseJson;
+
+        if (!Array.isArray(responseJson)) {
+            return;
+        }
+
+        // O backend ainda não devolve todos os campos usados pelos filtros.
+        SPECIALISTS = responseJson.map((specialist): Specialist => ({
+            ...specialist,
+            distanceToUser: specialist.distanceToUser ?? 0,
+            availableToday: specialist.availableToday ?? false,
+            address: {
+                zipcode: specialist.address?.zipcode
+                    ?? specialist.address?.zipCode
+                    ?? "",
+                street: specialist.address?.street ?? "",
+                streetNumber: specialist.address?.streetNumber ?? "",
+                neighborhood: specialist.address?.neighborhood ?? "",
+                city: specialist.address?.city ?? "",
+                state: specialist.address?.state ?? "",
+            },
+        }));
     })
 }
