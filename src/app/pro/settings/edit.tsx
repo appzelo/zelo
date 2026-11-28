@@ -26,11 +26,19 @@ import SectionText from "../../../components/SectionText"
 const SPECIALIST_ID = "1"
 
 const EMPTY_FORM: SpecialistProfileInput = {
-    name: "",
+    fullName: "",
     specialty: "",
-    license: "",
+    professionalID: "",
     email: "",
     phone: "",
+    address: {
+        zipcode: "",
+        street: "",
+        streetNumber: "",
+        neighborhood: "",
+        city: "",
+        state: "",
+    },
 }
 
 export default function ProEditProfile() {
@@ -52,11 +60,12 @@ export default function ProEditProfile() {
             }
 
             form.reset({
-                name: found.name,
+                fullName: found.fullName,
                 specialty: found.specialty,
-                license: found.license,
+                professionalID: found.professionalID,
                 email: found.email,
                 phone: found.phone,
+                address: found.address ?? EMPTY_FORM.address,
             })
 
             setLoaded(true)
@@ -115,7 +124,7 @@ export default function ProEditProfile() {
                         <FormProvider {...form}>
                             <View style={styles.section}>
                                 <AppInput
-                                    name="name"
+                                    name="fullName"
                                     showLabel
                                     label="Nome completo"
                                     placeholder="Seu nome completo"
@@ -133,7 +142,7 @@ export default function ProEditProfile() {
                                 />
 
                                 <AppInput
-                                    name="license"
+                                    name="professionalID"
                                     showLabel
                                     label="Registro profissional"
                                     placeholder="Ex.: CRM 123456-SP"
@@ -167,6 +176,72 @@ export default function ProEditProfile() {
                                     mask="phone"
                                     required
                                 />
+                            </View>
+
+                            <SectionText
+                                title="Endereço base"
+                                titleStyle={styles.sectionTitle}
+                            />
+
+                            <View style={styles.section}>
+                                <AppInput
+                                    name="address.zipcode"
+                                    showLabel
+                                    label="CEP"
+                                    placeholder="00000-000"
+                                    keyboardType="number-pad"
+                                    mask="cep"
+                                    required
+                                />
+
+                                <View style={styles.row}>
+                                    <AppInput
+                                        name="address.street"
+                                        showLabel
+                                        label="Rua/Avenida"
+                                        containerStyle={styles.streetInput}
+                                        autoCapitalize="words"
+                                        required
+                                    />
+
+                                    <AppInput
+                                        name="address.streetNumber"
+                                        showLabel
+                                        label="Nº"
+                                        containerStyle={styles.numberInput}
+                                        keyboardType="number-pad"
+                                        required
+                                    />
+                                </View>
+
+                                <AppInput
+                                    name="address.neighborhood"
+                                    showLabel
+                                    label="Bairro"
+                                    autoCapitalize="words"
+                                    required
+                                />
+
+                                <View style={styles.row}>
+                                    <AppInput
+                                        name="address.city"
+                                        showLabel
+                                        label="Cidade"
+                                        containerStyle={styles.cityInput}
+                                        autoCapitalize="words"
+                                        required
+                                    />
+
+                                    <AppInput
+                                        name="address.state"
+                                        showLabel
+                                        label="UF"
+                                        containerStyle={styles.stateInput}
+                                        mask="uf"
+                                        autoCapitalize="characters"
+                                        required
+                                    />
+                                </View>
                             </View>
 
                             {saved && (
@@ -224,6 +299,27 @@ const styles = StyleSheet.create({
 
     section: {
         gap: 14,
+    },
+
+    row: {
+        flexDirection: "row",
+        gap: 12,
+    },
+
+    streetInput: {
+        flex: 2,
+    },
+
+    numberInput: {
+        flex: 1,
+    },
+
+    cityInput: {
+        flex: 3,
+    },
+
+    stateInput: {
+        flex: 1,
     },
 
     savedBanner: {
